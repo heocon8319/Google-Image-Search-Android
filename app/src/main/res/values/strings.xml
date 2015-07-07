@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ToCleveroad</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="favourite">Favourite</string>
+</resources>
