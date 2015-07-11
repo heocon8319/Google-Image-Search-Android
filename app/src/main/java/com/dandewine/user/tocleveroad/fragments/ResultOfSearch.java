@@ -16,7 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.dandewine.user.tocleveroad.ImageAdapter;
+import com.dandewine.user.tocleveroad.MainActivity;
 import com.dandewine.user.tocleveroad.R;
+import com.dandewine.user.tocleveroad.model.GoogleImage;
 
 import java.util.ArrayList;
 
@@ -35,31 +37,55 @@ public class ResultOfSearch extends Fragment {
 
     public RecyclerView recyclerView;
     public StaggeredGridLayoutManager mLayoutManager;
-    ImageAdapter adapter;
-    ArrayList<ImageView> imageList;
+   public static ImageAdapter adapter;
+    ArrayList<GoogleImage> imageList;
+    MainActivity context;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.result_fragment,container,false);
         ButterKnife.inject(this,v);
-
+        context = (MainActivity)getActivity();
         final LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         linearLayout.setGravity(Gravity.CENTER);
         recyclerView = new RecyclerView(getActivity());
-        recyclerView.setHasFixedSize(false);
-        imageList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            imageList.add(new ImageView(getActivity()));
-        }
+        recyclerView.setHasFixedSize(true);
         mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
-
+        if(imageList==null)
+            imageList = new ArrayList<>();
+      /*  for (int i = 0; i <10 ; i++) {//for testing
+            imageList.add(new GoogleImage());
+        }*/
         recyclerView.setLayoutManager(mLayoutManager);
-        adapter = new ImageAdapter(imageList);
+        adapter = new ImageAdapter(imageList,context);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setAdapter(adapter);
         linearLayout.addView(recyclerView);
         return linearLayout;
+    }
+    private View getRecyclerView(){
+        final LinearLayout linearLayout = new LinearLayout(getActivity());
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        linearLayout.setGravity(Gravity.CENTER);
+        recyclerView = new RecyclerView(getActivity());
+        recyclerView.setHasFixedSize(false);
+        mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        if(imageList==null)
+            imageList = new ArrayList<>();
+        recyclerView.setLayoutManager(mLayoutManager);
+        adapter = new ImageAdapter(imageList,context);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        recyclerView.setAdapter(adapter);
+        linearLayout.addView(recyclerView);
+        return linearLayout;
+    }
+    public void updateSearchResults(ArrayList<GoogleImage> images){
+        int oldSize = imageList.size();
+        int newSearch = images.size();
+        imageList.addAll(images);
+        adapter.notifyItemRangeChanged(0,oldSize+newSearch);
     }
 }

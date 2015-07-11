@@ -1,9 +1,7 @@
 package com.dandewine.user.tocleveroad;
 
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.speech.RecognizerIntent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,32 +9,43 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dandewine.user.tocleveroad.fragments.ResultOfSearch;
+import com.dandewine.user.tocleveroad.model.GoogleSearchResponse;
+import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceRequest;
+import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceService;
+import com.dandewine.user.tocleveroad.other.SlidingTabLayout;
+import com.dandewine.user.tocleveroad.other.ViewPagerAdapter;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestCancellationListener;
+import com.octo.android.robospice.request.listener.RequestListener;
+import com.orhanobut.logger.Logger;
 import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 
-import java.util.ArrayList;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private SearchBox searchBox;
+    @InjectView(R.id.toolbar) Toolbar toolbar;
+    @InjectView(R.id.searchbox) SearchBox searchBox;
     private ViewPagerAdapter pagerAdapter;
     private SlidingTabLayout tabs;
+    private SampleRetrofitSpiceRequest request;
+    private SpiceManager spiceManager = new SpiceManager(SampleRetrofitSpiceService.class);
     ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        ButterKnife.inject(this);
         setSupportActionBar(toolbar);
-        searchBox = (SearchBox) findViewById(R.id.searchbox);
-        initTabs();
+        initTabs();//устанавливаем вкладки
     }
 
     private void initTabs(){
@@ -82,6 +91,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        spiceManager.start(MainActivity.this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        spiceManager.shouldStop();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -96,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public void openSearch() {
+    public void openSearch() {//события связанные с поисковым вводом
         toolbar.setTitle("");
         searchBox.revealFromMenuItem(R.id.action_search, this);
        /* for (int x = 0; x < 10; x++) {
@@ -125,8 +146,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSearchClosed() {
-                // Use this to un-tint the screen
-                closeSearch();
+                searchBox.hideCircularly(MainActivity.this);
+                if(searchBox.getSearchText().isEmpty())toolbar.setTitle("toCleveroad");
             }
 
             @Override
@@ -137,12 +158,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSearch(String searchTerm) {
-                Toast.makeText(MainActivity.this, searchTerm + " Searched",
-                        Toast.LENGTH_LONG).show();
                 toolbar.setTitle("toCleveroad");
-                if(isConnected())
-                    Log.d("myTag","connected");
-
+                if(isConnected()) {
+                    request = new SampleRetrofitSpiceRequest(searchTerm, 1);
+                    spiceManager.execute(request, searchTerm, DurationInMillis.ONE_MINUTE, new RequestImageListener());
+                }else
+                    Toast.makeText(MainActivity.this,
+                            "Sorry, seems we are haven't connection with network",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -153,24 +175,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    protected void closeSearch() {
-        searchBox.hideCircularly(this);
-        if(searchBox.getSearchText().isEmpty())toolbar.setTitle("toCleveroad");
-    }
+    //проверка наличие соеденения с сетью
     private boolean isConnected(){
         ConnectivityManager manager = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         return networkInfo!=null && networkInfo.isConnected();
     }
-
+    //слушатель ответа нашего запроса
+    private class RequestImageListener implements RequestListener<GoogleSearchResponse>{
         @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-           /* if (requestCode == SearchBox.VOICE_RECOGNITION_CODE && resultCode == this.RESULT_OK) {
-                ArrayList<String> matches = data
-                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                searchBox.populateEditText(matches);
-            }*/
-            super.onActivityResult(requestCode, resultCode, data);
+        public void onRequestFailure(SpiceException spiceException) {
+            Toast.makeText(MainActivity.this,"failure",Toast.LENGTH_SHORT).show();
         }
 
+        @Override
+        public void onRequestSuccess(GoogleSearchResponse s) {
+            Toast.makeText(MainActivity.this,"success",Toast.LENGTH_SHORT).show();
+            ResultOfSearch results =(ResultOfSearch)getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0));
+            results.updateSearchResults(s.items);
+        }
+    }
 }

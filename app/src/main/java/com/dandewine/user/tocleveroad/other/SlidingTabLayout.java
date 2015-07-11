@@ -1,4 +1,4 @@
-package com.dandewine.user.tocleveroad;
+package com.dandewine.user.tocleveroad.other;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.dandewine.user.tocleveroad.R;
 
 import butterknife.ButterKnife;
 
