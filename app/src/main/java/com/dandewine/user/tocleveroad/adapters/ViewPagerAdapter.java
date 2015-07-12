@@ -1,4 +1,4 @@
-package com.dandewine.user.tocleveroad.other;
+package com.dandewine.user.tocleveroad.adapters;
 
 
 import android.support.v4.app.Fragment;

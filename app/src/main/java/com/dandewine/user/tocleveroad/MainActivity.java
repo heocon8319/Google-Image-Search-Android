@@ -6,10 +6,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dandewine.user.tocleveroad.fragments.ResultOfSearch;
@@ -17,14 +15,14 @@ import com.dandewine.user.tocleveroad.model.GoogleSearchResponse;
 import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceRequest;
 import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceService;
 import com.dandewine.user.tocleveroad.other.SlidingTabLayout;
-import com.dandewine.user.tocleveroad.other.ViewPagerAdapter;
+import com.dandewine.user.tocleveroad.adapters.ViewPagerAdapter;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestCancellationListener;
 import com.octo.android.robospice.request.listener.RequestListener;
-import com.orhanobut.logger.Logger;
 import com.quinny898.library.persistentsearch.SearchBox;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -33,16 +31,16 @@ public class MainActivity extends AppCompatActivity {
 
     @InjectView(R.id.toolbar) Toolbar toolbar;
     @InjectView(R.id.searchbox) SearchBox searchBox;
-    private ViewPagerAdapter pagerAdapter;
+    public ViewPagerAdapter pagerAdapter;
     private SlidingTabLayout tabs;
-    private SampleRetrofitSpiceRequest request;
-    private SpiceManager spiceManager = new SpiceManager(SampleRetrofitSpiceService.class);
     ViewPager pager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
         initTabs();//устанавливаем вкладки
@@ -91,20 +89,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        spiceManager.start(MainActivity.this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        spiceManager.shouldStop();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
+        // Handle action bar result_item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
@@ -147,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSearchClosed() {
                 searchBox.hideCircularly(MainActivity.this);
-                if(searchBox.getSearchText().isEmpty())toolbar.setTitle("toCleveroad");
+                searchBox.setSearchString("");
+               toolbar.setTitle("toCleveroad");
             }
 
             @Override
@@ -157,11 +144,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSearch(String searchTerm) {
+            public void onSearch(String searchTerm){
                 toolbar.setTitle("toCleveroad");
                 if(isConnected()) {
-                    request = new SampleRetrofitSpiceRequest(searchTerm, 1);
-                    spiceManager.execute(request, searchTerm, DurationInMillis.ONE_MINUTE, new RequestImageListener());
+                    ((ResultOfSearch)getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0))).sendRequest(searchTerm);
                 }else
                     Toast.makeText(MainActivity.this,
                             "Sorry, seems we are haven't connection with network",Toast.LENGTH_SHORT).show();
@@ -182,17 +168,5 @@ public class MainActivity extends AppCompatActivity {
         return networkInfo!=null && networkInfo.isConnected();
     }
     //слушатель ответа нашего запроса
-    private class RequestImageListener implements RequestListener<GoogleSearchResponse>{
-        @Override
-        public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(MainActivity.this,"failure",Toast.LENGTH_SHORT).show();
-        }
 
-        @Override
-        public void onRequestSuccess(GoogleSearchResponse s) {
-            Toast.makeText(MainActivity.this,"success",Toast.LENGTH_SHORT).show();
-            ResultOfSearch results =(ResultOfSearch)getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0));
-            results.updateSearchResults(s.items);
-        }
-    }
 }

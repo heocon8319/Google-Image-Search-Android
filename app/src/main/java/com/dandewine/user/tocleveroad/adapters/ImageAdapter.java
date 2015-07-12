@@ -1,26 +1,24 @@
-package com.dandewine.user.tocleveroad;
+package com.dandewine.user.tocleveroad.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.v7.widget.CardView;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.dandewine.user.tocleveroad.GalleryActivity;
+import com.dandewine.user.tocleveroad.MainActivity;
+import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
-import com.koushikdutta.ion.Ion;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 
@@ -29,23 +27,20 @@ import butterknife.ButterKnife;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
     ArrayList<GoogleImage> imageList;
     Context context;
-    //ImageLoader imageLoader=ImageLoader.getInstance(); //for UIL
 
     public ImageAdapter(ArrayList<GoogleImage> imageList,Context context) {
         this.imageList = imageList;
         this.context = context;
-     //imageLoader.init(ImageLoaderConfiguration.createDefault(context)); //for UIL
-
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item,viewGroup,false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.result_item,viewGroup,false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         GoogleImage outerImg = imageList.get(i);
         GoogleImage.Image image = imageList.get(i).image;
         String link = image.thumbnailLink;
@@ -54,8 +49,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         int width = (int)image.thumbnailWidth;
        Picasso.with(context)
                 .load(link)
-                .resize(width*2,height*2)
-                .into(viewHolder.image);
+               .resize(width * 2, height * 2)
+               .into(viewHolder.image);
         viewHolder.text.setText(outerImg.title);
         viewHolder.favouriteUncheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +64,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             public void onClick(View v) {
                 v.setVisibility(View.GONE);
                 viewHolder.favouriteUncheck.setVisibility(View.VISIBLE);
+            }
+        });
+        viewHolder.image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, GalleryActivity.class);
+                intent.putExtra("position",i);
+               // intent.putExtra("images",imageList);
+                context.startActivity(intent);
             }
         });
 

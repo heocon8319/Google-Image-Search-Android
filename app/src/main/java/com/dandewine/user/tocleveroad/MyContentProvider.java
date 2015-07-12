@@ -46,8 +46,8 @@ public class MyContentProvider extends ContentProvider {
     static final String IMAGE_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."+
             AUTHORITY+"."+CONTACT_PATH;
 
-    //one item
-    static final String IMAGE_CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."+
+    //one result_item
+    static final String IMAGE_CONTENT_ITEM_TYPE = "vnd.android.cursor.result_item/vnd."+
             AUTHORITY+"."+CONTACT_PATH;
     //create associations
     private static final UriMatcher uriMatcher;

@@ -1,4 +1,4 @@
-package com.dandewine.user.tocleveroad.other;
+package com.dandewine.user.tocleveroad.adapters;
 
 /*
  * Copyright (C) 2011 The Android Open Source Project
@@ -97,7 +97,7 @@ public abstract class FixedFragmentStatePagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        // If we already have this item instantiated, there is nothing
+        // If we already have this result_item instantiated, there is nothing
         // to do.  This can happen when we are restoring the entire pager
         // from its saved state, where the fragment manager has already
         // taken care of restoring the fragments we previously had instantiated.
@@ -114,7 +114,7 @@ public abstract class FixedFragmentStatePagerAdapter extends PagerAdapter {
 
         Fragment fragment = getItem(position);
         String fragmentTag = getTag(position);
-        if (DEBUG) Log.v(TAG, "Adding item #" + position + ": f=" + fragment + " t=" + fragmentTag);
+        if (DEBUG) Log.v(TAG, "Adding result_item #" + position + ": f=" + fragment + " t=" + fragmentTag);
         if (mSavedState.size() > position) {
             String savedTag = mSavedFragmentTags.get(position);
             if (TextUtils.equals(fragmentTag, savedTag)) {
@@ -142,7 +142,7 @@ public abstract class FixedFragmentStatePagerAdapter extends PagerAdapter {
         if (mCurTransaction == null) {
             mCurTransaction = mFragmentManager.beginTransaction();
         }
-        if (DEBUG) Log.v(TAG, "Removing item #" + position + ": f=" + object
+        if (DEBUG) Log.v(TAG, "Removing result_item #" + position + ": f=" + object
                 + " v=" + ((Fragment)object).getView() + " t=" + fragment.getTag());
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
