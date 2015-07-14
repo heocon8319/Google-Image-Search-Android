@@ -15,14 +15,14 @@ import android.widget.TextView;
 import com.dandewine.user.tocleveroad.Config565Transformation;
 import com.dandewine.user.tocleveroad.GoogleImageSearcher;
 import com.dandewine.user.tocleveroad.R;
-import com.dandewine.user.tocleveroad.ToFavouriteService;
+import com.dandewine.user.tocleveroad.db.ToFavouriteService;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
-import com.dandewine.user.tocleveroad.model.GoogleSearchResponse;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
     ArrayList<GoogleImage> imageList;
@@ -44,6 +44,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         GoogleImageSearcher app = (GoogleImageSearcher)context.getApplicationContext();
+        ArrayList<String> savedURLs = app.getUrlList();
         final GoogleImage outerImg = imageList.get(i);
         final GoogleImage.Image image = imageList.get(i).getImage();
         String link = image.getThumbnailLink();
@@ -71,8 +72,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 goToService(outerImg.getTitle(), outerImg.getLink());
             }
         });
-        if(app.getUrlList()!=null) {
-            for (String url : app.getUrlList())
+        if(savedURLs!=null) {
+            for (String url : savedURLs)
                 if (TextUtils.equals(outerImg.getLink(), url))
                     outerImg.setIsFavourite(true);
         }
@@ -107,19 +108,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
 
     public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView image,favouriteUncheck,favouriteCheck;
-        LinearLayout placeHolder,placeNameHolder;
+        @InjectView(R.id.imageView)ImageView image;
+        @InjectView(R.id.heart_uncheck) ImageView favouriteUncheck;
+        @InjectView(R.id.heart_check)ImageView favouriteCheck;
+        @InjectView(R.id.placeholder)LinearLayout placeHolder;
         TextView text;
         public ViewHolder(View v) {
             super(v);
-            image = ButterKnife.findById(v,R.id.imageView);
-            text = ButterKnife.findById(v,R.id.text_title);
-            favouriteUncheck = ButterKnife.findById(v,R.id.heart_uncheck);
-            favouriteCheck = ButterKnife.findById(v,R.id.heart_check);
-            placeHolder = ButterKnife.findById(v,R.id.placeholder);
-            placeNameHolder = ButterKnife.findById(v,R.id.placeNameHolder);
             placeHolder.setOnClickListener(this);
-
         }
 
         @Override

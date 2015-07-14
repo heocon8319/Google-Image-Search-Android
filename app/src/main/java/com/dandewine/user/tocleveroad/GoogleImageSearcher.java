@@ -3,6 +3,8 @@ package com.dandewine.user.tocleveroad;
 import android.app.Application;
 import android.database.Cursor;
 
+import com.dandewine.user.tocleveroad.db.MyContentProvider;
+
 import java.util.ArrayList;
 
 public class GoogleImageSearcher extends Application {

@@ -45,7 +45,6 @@ public class GalleryActivity extends AppCompatActivity {
     private GalleryPagerAdapter _adapter;
     public  ArrayList<GoogleImage> images;
 
-
     @InjectView(R.id.pager) ViewPager _pager;
     @InjectView(R.id.thumbnails) LinearLayout _thumbnails;
     @InjectView(R.id.btn_close) ImageButton _closeButton;

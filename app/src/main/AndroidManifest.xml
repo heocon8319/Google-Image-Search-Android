@@ -24,14 +24,14 @@
         <activity android:name=".GalleryActivity"/>
 
         <provider
-            android:name=".MyContentProvider"
+            android:name=".db.MyContentProvider"
             android:authorities="com.dandewine.user.tocleveroad"
             android:enabled="true"
             android:exported="true" >
         </provider>
         <service android:name=".networking.SampleRetrofitSpiceService"
             android:exported="false" android:enabled="true"/>
-        <service android:name=".ToFavouriteService" android:enabled="true" android:exported="false"/>
+        <service android:name=".db.ToFavouriteService" android:enabled="true" android:exported="false"/>
     </application>
 
 </manifest>
