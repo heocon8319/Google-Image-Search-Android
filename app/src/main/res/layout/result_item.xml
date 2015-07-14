@@ -1,78 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-
-
-
     <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/row_my_card"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         card_view:cardPreventCornerOverlap="false"
-        card_view:cardCornerRadius="5dp">
+        card_view:cardCornerRadius="5dp"
+        >
+    <LinearLayout
+        android:id="@+id/placeholder"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="?android:selectableItemBackground"
+        android:orientation="vertical">
+
+    <ImageView android:id="@+id/imageView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@mipmap/ic_launcher"
+        />
+
+
+
+
         <LinearLayout
+            android:id="@+id/placeNameHolder"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:maxLines="1"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/text_title" />
+            <FrameLayout
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:layout_gravity="top">
-
-                <ImageView android:id="@+id/imageView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="text" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:layout_margin="5dp"
-                    android:maxLines="1"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Text"
-                    android:id="@+id/text_title" />
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent">
-                    <ImageView
-                        android:id="@+id/heart_uncheck"
-                        android:layout_width="25dp"
-                        android:background="@android:color/transparent"
-                        android:layout_marginLeft="7dp"
-                        android:layout_height="25dp"
-                        android:src="@mipmap/heart_check"/>
-                    <ImageView
-                        android:id="@+id/heart_check"
-                        android:layout_width="25dp"
-                        android:background="@android:color/transparent"
-                        android:layout_marginLeft="7dp"
-                        android:layout_height="25dp"
-                        android:visibility="gone"
-                        android:src="@mipmap/heart_check1"/>
-                </FrameLayout>
+                android:layout_gravity="bottom">
+                <ImageView
+                    android:id="@+id/heart_uncheck"
+                    android:layout_width="25dp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="7dp"
+                    android:layout_height="25dp"
+                    android:src="@mipmap/heart_grey"/>
+                <ImageView
+                    android:id="@+id/heart_check"
+                    android:layout_width="25dp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="7dp"
+                    android:layout_height="25dp"
+                    android:visibility="gone"
+                    android:src="@mipmap/heart_check1"/>
+            </FrameLayout>
 
 
-            </LinearLayout>
         </LinearLayout>
-
-
-
+</LinearLayout>
 
     </android.support.v7.widget.CardView>
 
-</LinearLayout>

@@ -12,8 +12,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.w3c.dom.Text;
-
 public class MyContentProvider extends ContentProvider {
     final String LOG_TAG = "Provider";
     //db
@@ -32,7 +30,7 @@ public class MyContentProvider extends ContentProvider {
     //authority+path and general uri
     static final String AUTHORITY = "com.dandewine.user.tocleveroad";
     static final String CONTACT_PATH = "images";
-    public static final Uri CONTACT_CONTENT_URI = Uri.parse("content://"+
+    public static final Uri IMAGE_CONTENT_URI = Uri.parse("content://"+
     AUTHORITY+"/"+CONTACT_PATH);
 
     //general uri for table
@@ -102,7 +100,7 @@ public class MyContentProvider extends ContentProvider {
 
         db = dbHelper.getWritableDatabase();
         long rowID = db.insert(IMAGE_TABLE,null,values);
-        Uri resultUri = ContentUris.withAppendedId(CONTACT_CONTENT_URI,rowID);
+        Uri resultUri = ContentUris.withAppendedId(IMAGE_CONTENT_URI,rowID);
         getContext().getContentResolver().notifyChange(resultUri,null);
         return resultUri;
     }
@@ -136,7 +134,7 @@ public class MyContentProvider extends ContentProvider {
         db = dbHelper.getWritableDatabase();
         Cursor cursor = db.query(IMAGE_TABLE,projection,selection,selectionArgs,
                 null,null,sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(),CONTACT_CONTENT_URI);
+        cursor.setNotificationUri(getContext().getContentResolver(), IMAGE_CONTENT_URI);
         return cursor;
     }
 

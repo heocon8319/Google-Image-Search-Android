@@ -1,7 +1,6 @@
 package com.dandewine.user.tocleveroad.networking;
 
 import com.octo.android.robospice.retrofit.RetrofitGsonSpiceService;
-import com.octo.android.robospice.retrofit.RetrofitJackson2SpiceService;
 
 
 
@@ -16,5 +15,4 @@ public class SampleRetrofitSpiceService extends RetrofitGsonSpiceService {
     protected String getServerUrl() {
         return GoogleSearchInterface.BASE_URL;
     }
-
 }

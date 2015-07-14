@@ -42,11 +42,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class GalleryActivity extends AppCompatActivity {
-
-    public static final String TAG = "GalleryActivity";
-    public static final String EXTRA_NAME = "images";
     private GalleryPagerAdapter _adapter;
-    public static ArrayList<GoogleImage> images;
+    public  ArrayList<GoogleImage> images;
 
 
     @InjectView(R.id.pager) ViewPager _pager;
@@ -58,7 +55,7 @@ public class GalleryActivity extends AppCompatActivity {
         setContentView(R.layout.gallery_fragment);
         ButterKnife.inject(this);
 
-        //images = getIntent().getParcelableArrayListExtra("images");
+        images = getIntent().getParcelableArrayListExtra("images");
         _adapter = new GalleryPagerAdapter(this);
         _pager.setAdapter(_adapter);
         _pager.setOffscreenPageLimit(10); // how many images to load into memory
@@ -66,7 +63,6 @@ public class GalleryActivity extends AppCompatActivity {
         _closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Close clicked");
                 finish();
             }
         });
@@ -124,7 +120,6 @@ public class GalleryActivity extends AppCompatActivity {
             thumbView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "Thumbnail clicked");
                     _pager.setCurrentItem(position);
                 }
             });
@@ -133,8 +128,8 @@ public class GalleryActivity extends AppCompatActivity {
             final ImageView imageView = ButterKnife.findById(itemView, R.id.image);
             //final SubsamplingScaleImageView imageView = ButterKnife.findById(itemView, R.id.image);
             // Asynchronously load the image and set the thumbnail and pager view
-            Picasso.with(_context).load(images.get(position).link).transform(new Config565Transformation()).into(imageView);
-            Picasso.with(_context).load(images.get(position).image.thumbnailLink).into(thumbView);
+            Picasso.with(_context).load(images.get(position).getLink()).transform(new Config565Transformation()).into(imageView);
+            Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
 
             return itemView;
         }

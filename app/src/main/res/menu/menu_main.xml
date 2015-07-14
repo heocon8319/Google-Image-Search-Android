@@ -10,4 +10,10 @@
         app:showAsAction="always"
         >
     </item>
+    <item
+        android:id="@+id/action_toggle"
+        android:icon="@mipmap/listiview"
+        app:showAsAction="always"
+        android:orderInCategory="300"
+        android:title="Show as grid" />
 </menu>

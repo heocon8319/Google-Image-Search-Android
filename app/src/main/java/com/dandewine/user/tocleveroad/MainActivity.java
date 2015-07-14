@@ -11,18 +11,9 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.dandewine.user.tocleveroad.fragments.ResultOfSearch;
-import com.dandewine.user.tocleveroad.model.GoogleSearchResponse;
-import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceRequest;
-import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceService;
 import com.dandewine.user.tocleveroad.other.SlidingTabLayout;
 import com.dandewine.user.tocleveroad.adapters.ViewPagerAdapter;
-import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.DurationInMillis;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 import com.quinny898.library.persistentsearch.SearchBox;
-
-import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -33,19 +24,38 @@ public class MainActivity extends AppCompatActivity {
     @InjectView(R.id.searchbox) SearchBox searchBox;
     public ViewPagerAdapter pagerAdapter;
     private SlidingTabLayout tabs;
-    ViewPager pager;
-
+    public ViewPager pager;
+    public static boolean isListView;
+    private Menu menu;
+    public int page = 1;
+    public String query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        isListView = true;
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
         initTabs();//устанавливаем вкладки
-    }
 
+
+    }
+    private void toggle(){
+        ResultOfSearch resultFragment = ((ResultOfSearch) getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0)));
+        MenuItem item = menu.findItem(R.id.action_toggle);
+        if(isListView){
+            item.setIcon(R.mipmap.grid);
+            item.setTitle("Show as grid");
+            isListView=false;
+            resultFragment.toggle(1);
+        }else{
+            item.setIcon(R.mipmap.listiview);
+            item.setTitle("Show as list");
+            isListView = true;
+            resultFragment.toggle(0);
+        }
+    }
     private void initTabs(){
         CharSequence Titles[]={
                 getResources().getText(R.string.search),
@@ -75,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.ColorAccent);
+                return getResources().getColor(R.color.accent);
             }
         });
         tabs.setViewPager(pager);
@@ -83,24 +93,20 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar result_item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             openSearch();
             return true;
+        }else{
+            toggle();
         }
-
         return super.onOptionsItemSelected(item);
     }
     public void openSearch() {//события связанные с поисковым вводом
@@ -145,9 +151,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSearch(String searchTerm){
-                toolbar.setTitle("toCleveroad");
+                query=searchTerm;
+                toolbar.setTitle("Google Image Searcher");
                 if(isConnected()) {
-                    ((ResultOfSearch)getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0))).sendRequest(searchTerm);
+                   ResultOfSearch fragment = ((ResultOfSearch) getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0)));
+                    fragment.sendRequest(searchTerm,11);
                 }else
                     Toast.makeText(MainActivity.this,
                             "Sorry, seems we are haven't connection with network",Toast.LENGTH_SHORT).show();

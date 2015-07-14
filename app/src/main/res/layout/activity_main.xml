@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:elevation="2dp"
         android:layout_height="wrap_content"
-        android:background="@color/ColorPrimary"
+        android:background="@color/primary"
         android:layout_below="@+id/toolbar"
         android:layout_alignParentLeft="true" />
 

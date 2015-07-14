@@ -10,6 +10,7 @@ public class SampleRetrofitSpiceRequest extends RetrofitSpiceRequest<GoogleSearc
     long startIndex;
     String limit;
     String offset;
+
     public SampleRetrofitSpiceRequest(String query,long startIndex,String limit,String offset) {
         super(GoogleSearchResponse.class,GoogleSearchInterface.class);
         this.query = query;
@@ -27,6 +28,7 @@ public class SampleRetrofitSpiceRequest extends RetrofitSpiceRequest<GoogleSearc
     public GoogleSearchResponse loadDataFromNetwork() throws Exception {
         return getService().search(query,startIndex);
     }
+
 
 
 }

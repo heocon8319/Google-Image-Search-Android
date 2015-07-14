@@ -1,12 +1,15 @@
 package com.dandewine.user.tocleveroad.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +35,7 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 
 public class ResultOfSearch extends Fragment {
+    //singletone
     private static ResultOfSearch resultFramgent;
     public static ResultOfSearch getInstance(){
         if(resultFramgent==null){
@@ -40,14 +44,19 @@ public class ResultOfSearch extends Fragment {
         }else
             return resultFramgent;
     }
-
-    public RecyclerView recyclerView;
-    public StaggeredGridLayoutManager mLayoutManager;
-   public static ImageAdapter adapter;
+    //rest client
     private SampleRetrofitSpiceRequest request;
     private SpiceManager spiceManager = new SpiceManager(SampleRetrofitSpiceService.class);
-    ArrayList<GoogleImage> imageList;
-    MainActivity context;
+    public String searchQuery; int currentPage = 1;
+    //context
+    public RecyclerView recyclerView;
+    public StaggeredGridLayoutManager mLayoutManager;
+    public ImageAdapter adapter;
+    public ArrayList<GoogleImage> imageList;
+    public MainActivity context;
+
+    private boolean loading = false;
+    int firstVivisibleItemsGrid[] = new int[2];
     //==============================================================================================
 
     //ACTIVITY LIFECYCLE
@@ -69,11 +78,10 @@ public class ResultOfSearch extends Fragment {
         mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         if(imageList==null)
             imageList = new ArrayList<>();
-      /*  for (int i = 0; i <10 ; i++) {//for testing
-            imageList.add(new GoogleImage());
-        }*/
+
         recyclerView.setLayoutManager(mLayoutManager);
         adapter = new ImageAdapter(imageList,context);
+        adapter.setOnItemClickListener(adapterListener);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setAdapter(adapter);
@@ -81,6 +89,28 @@ public class ResultOfSearch extends Fragment {
         linearLayout.addView(recyclerView);
         return linearLayout;
     }
+    ImageAdapter.OnItemClickListener adapterListener = new ImageAdapter.OnItemClickListener() {
+        @Override
+        public void OnItemClick(View v, int position) {
+            Intent intent = new Intent(getActivity(),GalleryActivity.class);
+            intent.putExtra("position",position);
+            intent.putExtra("images",imageList);
+            startActivity(intent);
+        }
+    };
+
+    /**
+     * This method change count of span of staggered layout, if positive value to Grid,
+     * else to Listview
+     * */
+    public void toggle(int i){
+        if(i>0){
+            mLayoutManager.setSpanCount(1);
+        }else{
+            mLayoutManager.setSpanCount(2);
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -96,25 +126,45 @@ public class ResultOfSearch extends Fragment {
     //HANDLING REQUEST FROM GOOGLE SEARCH API
 
     //==============================================================================================
-    public void sendRequest(String query){
-        request = new SampleRetrofitSpiceRequest(query, 1);
-        spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
-       /* try {
-            spiceManager.getFromCache(GoogleSearchResponse.class, "food",DurationInMillis.ONE_WEEK,new RequestImageListener());
+    public void sendRequest(String query,int page){
+        searchQuery = query;
+        request = new SampleRetrofitSpiceRequest(query, page);
+       //spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
+        try {
+            spiceManager.getFromCache(GoogleSearchResponse.class, "get",DurationInMillis.ONE_WEEK,new RequestImageListener());
         }catch(Exception e){
             e.printStackTrace();
-        }*/
+        }
+        request=null;
     }
-    public void updateSearchResults(ArrayList<GoogleImage> images){
+    public void updateSearchResults(@NonNull ArrayList<GoogleImage> images){
         int oldSize = imageList.size();
-        int newSearch = images.size();
+        int newSize = images.size();
         imageList.addAll(images);
-        adapter.notifyItemRangeChanged(0,oldSize+newSearch);
+        adapter.notifyItemRangeChanged(0,oldSize+newSize);
     }
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
+            firstVivisibleItemsGrid = mLayoutManager.findFirstVisibleItemPositions(firstVivisibleItemsGrid);
+
+            if(!MainActivity.isListView) {
+                if (isEnd()) {
+                    loadMoreImages();
+                }
+            }else{
+                if(isEnd()){
+                    loadMoreImages();
+                }
+            }
+        }
+        private boolean isEnd(){
+            return !recyclerView.canScrollVertically(1) && firstVivisibleItemsGrid[0] != 0;
+        }
+        private void loadMoreImages(){
+            sendRequest(searchQuery,currentPage);
+            Log.d("myTag", "LAST-------HERE------PAGE "+currentPage);
         }
     }
     private class RequestImageListener implements RequestListener<GoogleSearchResponse> {
@@ -125,9 +175,8 @@ public class ResultOfSearch extends Fragment {
         @Override
         public void onRequestSuccess(GoogleSearchResponse s) {
             Toast.makeText(context,"success",Toast.LENGTH_SHORT).show();
-            ResultOfSearch results =(ResultOfSearch)context.getSupportFragmentManager().findFragmentByTag(context.pagerAdapter.getTag(0));
-            GalleryActivity.images = s.items;
-            results.updateSearchResults(s.items);
+            currentPage = s.queries.getNextPage().startIndex;
+            updateSearchResults(s.items);
         }
     }
 }
