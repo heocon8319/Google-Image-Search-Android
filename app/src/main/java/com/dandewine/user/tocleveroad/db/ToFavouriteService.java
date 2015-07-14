@@ -1,4 +1,4 @@
-package com.dandewine.user.tocleveroad;
+package com.dandewine.user.tocleveroad.db;
 
 import android.app.IntentService;
 import android.content.ContentValues;
