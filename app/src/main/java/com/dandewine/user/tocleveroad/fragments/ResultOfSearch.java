@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -25,6 +26,8 @@ import com.dandewine.user.tocleveroad.model.GoogleImage;
 import com.dandewine.user.tocleveroad.model.GoogleSearchResponse;
 import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceRequest;
 import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceService;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -57,6 +60,7 @@ public class ResultOfSearch extends Fragment {
 
     private boolean loading = false;
     int firstVivisibleItemsGrid[] = new int[2];
+
     //==============================================================================================
 
     //ACTIVITY LIFECYCLE
@@ -66,13 +70,13 @@ public class ResultOfSearch extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.result_fragment,container,false);
-        ButterKnife.inject(this,v);
-        setRetainInstance(true);
-        context = (MainActivity)getActivity();
         final LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         linearLayout.setGravity(Gravity.CENTER);
+        ButterKnife.inject(this,linearLayout);
+        setRetainInstance(true);
+        context = (MainActivity)getActivity();
+
         recyclerView = new RecyclerView(getActivity());
         recyclerView.setHasFixedSize(true);
         mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
@@ -87,6 +91,7 @@ public class ResultOfSearch extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new ScrollListener());
         linearLayout.addView(recyclerView);
+
         return linearLayout;
     }
     ImageAdapter.OnItemClickListener adapterListener = new ImageAdapter.OnItemClickListener() {
@@ -94,7 +99,7 @@ public class ResultOfSearch extends Fragment {
         public void OnItemClick(View v, int position) {
             Intent intent = new Intent(getActivity(),GalleryActivity.class);
             intent.putExtra("position",position);
-            intent.putExtra("images",imageList);
+            intent.putParcelableArrayListExtra("images",imageList);
             startActivity(intent);
         }
     };
@@ -129,19 +134,18 @@ public class ResultOfSearch extends Fragment {
     public void sendRequest(String query,int page){
         searchQuery = query;
         request = new SampleRetrofitSpiceRequest(query, page);
-       //spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
+       // spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
         try {
-            spiceManager.getFromCache(GoogleSearchResponse.class, "get",DurationInMillis.ONE_WEEK,new RequestImageListener());
+            spiceManager.getFromCache(GoogleSearchResponse.class, "lexus",DurationInMillis.ONE_WEEK,new RequestImageListener());
         }catch(Exception e){
             e.printStackTrace();
         }
         request=null;
     }
     public void updateSearchResults(@NonNull ArrayList<GoogleImage> images){
-        int oldSize = imageList.size();
         int newSize = images.size();
         imageList.addAll(images);
-        adapter.notifyItemRangeChanged(0,oldSize+newSize);
+        adapter.notifyItemRangeChanged(0,newSize);
     }
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
@@ -151,11 +155,11 @@ public class ResultOfSearch extends Fragment {
 
             if(!MainActivity.isListView) {
                 if (isEnd()) {
-                    loadMoreImages();
+                    //loadMoreImages();
                 }
             }else{
                 if(isEnd()){
-                    loadMoreImages();
+                    //loadMoreImages();
                 }
             }
         }

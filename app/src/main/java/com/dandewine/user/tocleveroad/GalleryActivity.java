@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -33,9 +34,12 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -73,13 +77,12 @@ public class GalleryActivity extends AppCompatActivity {
 
         Context _context;
         LayoutInflater _inflater;
-        private ImageLoader imageLoader;
+        Picasso picasso;
 
         public GalleryPagerAdapter(Context context) {
             _context = context;
             _inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            imageLoader = ImageLoader.getInstance();
-            imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+            picasso = Picasso.with(context);
         }
 
         @Override
@@ -124,10 +127,30 @@ public class GalleryActivity extends AppCompatActivity {
             });
             _thumbnails.addView(thumbView);
 
-            final ImageView imageView = ButterKnife.findById(itemView, R.id.image);
-            //final SubsamplingScaleImageView imageView = ButterKnife.findById(itemView, R.id.image);
+            //final ImageView imageView = ButterKnife.findById(itemView, R.id.image);
+            final SubsamplingScaleImageView imageView = ButterKnife.findById(itemView, R.id.image);
             // Asynchronously load the image and set the thumbnail and pager view
-            Picasso.with(_context).load(images.get(position).getLink()).transform(new Config565Transformation()).into(imageView);
+
+            RequestCreator creator = picasso.load(images.get(position).getLink());
+            creator.resizeDimen(R.dimen.large_width, R.dimen.large_height)
+                    .config(Bitmap.Config.RGB_565)
+                    .centerInside().into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Log.d("myTag", String.format("bitmap size = %sx%s,byteCount = %s", bitmap.getWidth(), bitmap.getHeight(), bitmap.getByteCount() / 1024));
+                    imageView.setImage(ImageSource.bitmap(bitmap));
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    Log.d("myTag", "onBitmapFailed");
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            });
             Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
 
             return itemView;
@@ -136,6 +159,9 @@ public class GalleryActivity extends AppCompatActivity {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((LinearLayout) object);
+        }
+        private void logMem(){
+            Log.d("myTagg", String.format("Total memory = %s", Runtime.getRuntime().totalMemory() / 1024));
         }
     }
 

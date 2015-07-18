@@ -15,37 +15,37 @@ import android.util.Log;
 public class MyContentProvider extends ContentProvider {
     final String LOG_TAG = "Provider";
     //db
-    static final String DB_NAME="toCleveroad";
+    static  final String DB_NAME="toCleveroad";
     static final int DB_VERSION = 1;
     //table name
-    static final String IMAGE_TABLE = "images";
+    static public final String IMAGE_TABLE = "images";
     //fields
-    static final String IMAGE_TABLE_ID = "_id";
-    static final String IMAGE_TITLE = "title";
-    static final String IMAGE_URL = "url";
+    static public final String IMAGE_TABLE_ID = "_id";
+    static public final String IMAGE_TITLE = "title";
+    static public final String IMAGE_URL = "url";
     //create query
     static final String IMAGE_CREATE="CREATE TABLE "+IMAGE_TABLE+" ("+
             IMAGE_TABLE_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
             IMAGE_TITLE+" TEXT, "+IMAGE_URL+" TEXT);";
     //authority+path and general uri
-    static final String AUTHORITY = "com.dandewine.user.tocleveroad";
-    static final String CONTACT_PATH = "images";
+    static public final String AUTHORITY = "com.dandewine.user.tocleveroad";
+    static public final String CONTACT_PATH = "images";
     public static final Uri IMAGE_CONTENT_URI = Uri.parse("content://"+
-    AUTHORITY+"/"+CONTACT_PATH);
+    AUTHORITY+"/"+CONTACT_PATH);//content://com.dandewine.user.tocleveroad/image
 
     //general uri for table
-    static final int URI_IMAGES = 1;
+    static public final int URI_IMAGES = 1;
 
     //general uri for particular record
-    static final int URI_IMAGES_ID = 2;
+    static public final int URI_IMAGES_ID = 2;
 
     //data types
     //a set of rows
-    static final String IMAGE_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."+
+    static public final String IMAGE_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."+
             AUTHORITY+"."+CONTACT_PATH;
 
     //one result_item
-    static final String IMAGE_CONTENT_ITEM_TYPE = "vnd.android.cursor.result_item/vnd."+
+    static public final String IMAGE_CONTENT_ITEM_TYPE = "vnd.android.cursor.result_item/vnd."+
             AUTHORITY+"."+CONTACT_PATH;
     //create associations
     private static final UriMatcher uriMatcher;
@@ -62,6 +62,10 @@ public class MyContentProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         switch (uriMatcher.match(uri)){
             case URI_IMAGES:
+                Log.d("myTag","entire table uri");
+                db = dbHelper.getWritableDatabase();
+                int res =db.delete(IMAGE_TABLE,selection,selectionArgs);
+                Log.d("myTag","delete = "+res);
                 break;
             case URI_IMAGES_ID:
                 String id = uri.getLastPathSegment();

@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 toolbar.setTitle("Google Image Searcher");
                 if(isConnected()) {
                    ResultOfSearch fragment = ((ResultOfSearch) getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0)));
-                    fragment.sendRequest(searchTerm,11);
+                    fragment.sendRequest(searchTerm,1);
                 }else
                     Toast.makeText(MainActivity.this,
                             "Sorry, seems we are haven't connection with network",Toast.LENGTH_SHORT).show();

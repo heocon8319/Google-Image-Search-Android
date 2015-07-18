@@ -48,6 +48,9 @@ public class ToFavouriteService extends IntentService {
            result = getContentResolver().insert(MyContentProvider.IMAGE_CONTENT_URI,cv);
         Log.d("myTag", "" + result);
     }
+    /**
+     * For removing item from DB create new
+     * */
     private void removeImage(String url){
         getContentResolver().delete(MyContentProvider.IMAGE_CONTENT_URI,MyContentProvider.IMAGE_URL+"=?",new String[]{url});
         Log.d("myTag","removeImage");
