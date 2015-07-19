@@ -37,7 +37,7 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
     private ResultOfSearch resultFragment;
     public OnItemClickListener onItemClickListener;
 
-    public FavouriteImageAdapter(Context context, File[] files) {
+    public FavouriteImageAdapter(Context context, ArrayList<File> files) {
         this.context = context;
         titles = new ArrayList<>();
         pathList = new ArrayList<>();

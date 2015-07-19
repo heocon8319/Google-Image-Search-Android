@@ -33,8 +33,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import retrofit.RestAdapter;
-import roboguice.util.temp.Ln;
 
 public class ResultOfSearch extends Fragment {
     //singletone
@@ -72,12 +70,13 @@ public class ResultOfSearch extends Fragment {
         final LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         linearLayout.setGravity(Gravity.CENTER);
-        ButterKnife.inject(this,linearLayout);
+        ButterKnife.inject(this, linearLayout);
         setRetainInstance(true);
         context = (MainActivity)getActivity();
 
         recyclerView = new RecyclerView(getActivity());
         recyclerView.setHasFixedSize(true);
+        recyclerView.setVerticalScrollBarEnabled(true);
         mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         if(imageList==null)
             imageList = new ArrayList<>();
@@ -88,7 +87,7 @@ public class ResultOfSearch extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(new ScrollListener());
+        recyclerView.addOnScrollListener(new OnResultsScrollListener());
         linearLayout.addView(recyclerView);
 
         return linearLayout;
@@ -131,7 +130,7 @@ public class ResultOfSearch extends Fragment {
     //HANDLING REQUEST FROM GOOGLE SEARCH API
 
     //==============================================================================================
-    public void sendRequest(String query,boolean isFromInputField){
+    public void sendRequest(@NonNull String query,boolean isFromInputField){
         if(isFromInputField) {//if user want to find example ronaldo and some later messi, image list with ronaldo will be clear
             requestCountFromInputFields++;
             if(requestCountFromInputFields>=2 && !TextUtils.equals(searchQuery,query))
@@ -139,13 +138,15 @@ public class ResultOfSearch extends Fragment {
         }
         searchQuery = query;
         request = new SampleRetrofitSpiceRequest(query, nextPage);
-        spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
-         /*  try {
-                 spiceManager.getFromCache(GoogleSearchResponse.class, "messi",DurationInMillis.ONE_WEEK,new RequestImageListener());
+       // spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
+
+           try {
+                 spiceManager.getFromCache(GoogleSearchResponse.class, "moto",DurationInMillis.ONE_WEEK,new RequestImageListener());
           }catch(Exception e){
                  e.printStackTrace();
-          }*/
+          }
         request=null;
+
     }
 
     public void updateSearchResults(@NonNull ArrayList<GoogleImage> images){
@@ -153,7 +154,7 @@ public class ResultOfSearch extends Fragment {
         imageList.addAll(images);
         adapter.notifyItemRangeChanged(0,newSize);
     }
-    private class ScrollListener extends RecyclerView.OnScrollListener {
+    private class OnResultsScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
@@ -177,7 +178,7 @@ public class ResultOfSearch extends Fragment {
             Log.d("myTag", "LAST-------HERE------PAGE "+ nextPage);
         }
     }
-    private class RequestImageListener implements RequestListener<GoogleSearchResponse> {
+    private final class RequestImageListener implements RequestListener<GoogleSearchResponse> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Toast.makeText(context, "Error" +spiceException.getMessage(), Toast.LENGTH_SHORT).show();

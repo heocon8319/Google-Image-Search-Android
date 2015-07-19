@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,11 +21,15 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dandewine.user.tocleveroad.GalleryActivity;
+import com.dandewine.user.tocleveroad.MainActivity;
 import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.adapters.FavouriteImageAdapter;
 import com.dandewine.user.tocleveroad.db.MyContentProvider;
+import com.dandewine.user.tocleveroad.other.Utils;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,7 +51,9 @@ public class Favourite extends Fragment {
     public FavouriteImageAdapter adapter;
     public RecyclerView mRecyclerView;
     public StaggeredGridLayoutManager mLayoutManager;
-    File[] files;
+    private int firstVivisibleItemsGrid[] = new int[2];
+    private ArrayList<File> files;
+    private File dir;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,13 +61,23 @@ public class Favourite extends Fragment {
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setGravity(Gravity.CENTER);
         ButterKnife.inject(this, linearLayout);
+
+
         mLayoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView = new RecyclerView(getActivity());
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        File dir = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache");
-        files = dir.listFiles();
+        mRecyclerView.addOnScrollListener(new OnFavouriteScrollListener());
+
+
+        dir = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache");
+        files = new ArrayList<>();
+        for (int i = 0; i < 10 ; i++) {
+           files.add(dir.listFiles()[i]);
+        }
+        Log.d("myTag","last name = "+files.get(9).getName());
+
         if(files!=null)
             initAdapterFromCache(files);
         else
@@ -78,7 +95,7 @@ public class Favourite extends Fragment {
             startActivity(intent);
         }
     };
-    private void initAdapterFromCache(File[] files){
+    private void initAdapterFromCache(ArrayList<File> files){
         adapter = new FavouriteImageAdapter(getActivity(), files);
         Log.d("myTag","from Cache");
         adapter.setOnItemClickListener(onItemClickListener);
@@ -106,5 +123,37 @@ public class Favourite extends Fragment {
     }
     public void removeItemFromExternal(String name){
         adapter.remove(name);
+    }
+
+    class OnFavouriteScrollListener extends RecyclerView.OnScrollListener{
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            firstVivisibleItemsGrid = mLayoutManager.findFirstVisibleItemPositions(firstVivisibleItemsGrid);
+            if(!MainActivity.isListView){
+                if (isEnd()) loadMoreImages();
+            }
+            else if(isEnd()){
+                loadMoreImages();
+            }
+        }
+        private boolean isEnd(){
+            return !mRecyclerView.canScrollVertically(1) && firstVivisibleItemsGrid[0] != 0;
+        }
+        private void loadMoreImages(){
+            String lastName = files.get(files.size()-1).getName();
+            int size = dir.listFiles().length;
+            File[] test = dir.listFiles();
+            if(size>files.size()) {//if on SD more files than have adapter
+                for (int i = size - 1; i >= 0; i--) {
+                    if (TextUtils.equals(dir.listFiles()[i].getName(), lastName)) //last file name on adapter == last file name on SD
+                        break;
+                    File f = dir.listFiles()[i];
+                    files.add(f);
+                    adapter.addItem(f.getName(), Utils.concat("file:" + f.getAbsolutePath()), i);
+                }
+                adapter.notifyItemRangeChanged(0, files.size());
+            }
+        }
+
     }
 }

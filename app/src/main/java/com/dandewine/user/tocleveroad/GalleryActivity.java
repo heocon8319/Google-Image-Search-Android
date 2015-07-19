@@ -50,7 +50,7 @@ import butterknife.InjectView;
 public class GalleryActivity extends AppCompatActivity {
     private GalleryPagerAdapter _adapter;
     public  ArrayList<GoogleImage> images;
-    public File[]files;
+    public ArrayList<File> files;
     boolean fromCache;
 
     @InjectView(R.id.pager) ViewPager _pager;
@@ -66,7 +66,8 @@ public class GalleryActivity extends AppCompatActivity {
         if(!fromCache)
             images = getIntent().getParcelableArrayListExtra("images");
         else
-            files = (File[])getIntent().getSerializableExtra("files");
+            files = (ArrayList<File>)getIntent().getSerializableExtra("files");
+
         _adapter = new GalleryPagerAdapter(this);
         _pager.setAdapter(_adapter);
         _pager.setOffscreenPageLimit(10); // how many images to load into memory
@@ -99,7 +100,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-           return !fromCache?images.size():files.length;
+           return !fromCache?images.size():files.size();
         }
 
         @Override
@@ -147,7 +148,7 @@ public class GalleryActivity extends AppCompatActivity {
             if(!fromCache)
                   creator = picasso.load(images.get(position).getLink());
             else
-                  creator = picasso.load(files[position]);
+                  creator = picasso.load(files.get(position));
             creator.resizeDimen(R.dimen.large_width, R.dimen.large_height)
                     .config(Bitmap.Config.RGB_565)
                     .centerInside().into(new Target() {
@@ -170,7 +171,7 @@ public class GalleryActivity extends AppCompatActivity {
             if(!fromCache)
                  Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
             else
-               Picasso.with(_context).load(files[position]).config(Bitmap.Config.RGB_565).into(thumbView);
+               Picasso.with(_context).load(files.get(position)).config(Bitmap.Config.RGB_565).into(thumbView);
 
             return itemView;
         }

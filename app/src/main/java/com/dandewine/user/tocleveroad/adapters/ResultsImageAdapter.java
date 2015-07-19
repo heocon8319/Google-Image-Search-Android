@@ -170,21 +170,23 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
         File myDir = new File(root+"/ImageSearcherCache");
         myDir.mkdir();
         File checkFile = new File(myDir,fileName+".png");
-        if(!checkFile.exists()) {
+        if(checkFile.exists()){
             checkFile = null;
-            checkFile = new File(myDir, fileName+".png");
-            if (myDir.isDirectory() && myDir.exists()) {
-                try {
-                    FileOutputStream out = new FileOutputStream(checkFile);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                    Log.d("myTag","write file to external");
-                    out.flush();
-                    out.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            checkFile = new File(myDir,fileName+"(1).png");
+        }
+        if (myDir.isDirectory() && myDir.exists()) {
+            try {
+                FileOutputStream out = new FileOutputStream(checkFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                Log.d("myTag","write file to external");
+                out.flush();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+
+
     }
     //memory log for testing memory usage
     private void logMem(){
