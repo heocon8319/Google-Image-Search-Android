@@ -15,15 +15,10 @@ public interface GoogleSearchInterface {
             "image)";
     static final String QUERY = "/v1?key="+API_KEY+
                                 "&cx="+CUSTOM_SEARCH_ID+
-                                "&searchType="+SEARCH_TYPE_IMAGE+FILTER;
+                                "&searchType="+SEARCH_TYPE_IMAGE+FILTER+"&num=10";
 
     @GET(QUERY)
     public GoogleSearchResponse search(@Query("q") String query,
                                        @Query("start") long startIndex);
-    @GET(QUERY)
-    public GoogleSearchResponse search(@Query("q") String query,
-                                       @Query("start") long startIndex,
-                                       @Query("searchType") String searchType,
-                                       @Query("limit") String limit,
-                                       @Query("offset") String offset);
+
 }

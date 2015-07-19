@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dandewine.user.tocleveroad.MainActivity;
@@ -34,6 +35,7 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
     private ArrayList<String> titles;
     private boolean fromCache = false;
     private ResultOfSearch resultFragment;
+    public OnItemClickListener onItemClickListener;
 
     public FavouriteImageAdapter(Context context, File[] files) {
         this.context = context;
@@ -91,7 +93,8 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
         return pathList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        @InjectView(R.id.placeholder) LinearLayout placeHolder;
         @InjectView(R.id.imageView)ImageView image;
         @InjectView(R.id.heart_check)ImageView favouriteImage;
         @InjectView(R.id.heart_uncheck) ImageView unFavouriteImage;
@@ -99,6 +102,13 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.inject(this,itemView);
+            placeHolder.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(onItemClickListener!=null)
+                onItemClickListener.OnItemClick(v,getAdapterPosition());
         }
     }
     private void changeHeartImage(ViewHolder holder,boolean flag){
@@ -148,6 +158,11 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
             }
         }
     }
+    public interface OnItemClickListener{
+        void OnItemClick(View v,int position);
+    }
 
-
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 }

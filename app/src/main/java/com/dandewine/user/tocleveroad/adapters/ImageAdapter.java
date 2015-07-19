@@ -64,16 +64,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         final GoogleImage outerImg = imageList.get(i);
         final GoogleImage.Image image = imageList.get(i).getImage();
-        final String link = outerImg.getLink();
-        //Picasso.with(context).load(link).config(Bitmap.Config.RGB_565).resizeDimen(R.dimen.image_size,R.dimen.image_size).centerInside().into(viewHolder.image);
-        final DisplayImageOptions options = new DisplayImageOptions.Builder()
+        final String link = image.getThumbnailLink();
+        Picasso.with(context).load(link).config(Bitmap.Config.RGB_565)
+                .resize((int)image.getThumbnailWidth(),(int)image.getThumbnailHeight()).centerInside().into(viewHolder.image);
+       /* final DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .resetViewBeforeLoading(true)//it's important for recycling view
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
-        loader.displayImage(link,viewHolder.image,options);
+        loader.displayImage(link,viewHolder.image,options);*/
         viewHolder.text.setText(outerImg.getTitle());
         viewHolder.favouriteCheck.setOnClickListener(new View.OnClickListener() {
             @Override

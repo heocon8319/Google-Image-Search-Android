@@ -25,9 +25,11 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
@@ -48,6 +50,8 @@ import butterknife.InjectView;
 public class GalleryActivity extends AppCompatActivity {
     private GalleryPagerAdapter _adapter;
     public  ArrayList<GoogleImage> images;
+    public File[]files;
+    boolean fromCache;
 
     @InjectView(R.id.pager) ViewPager _pager;
     @InjectView(R.id.thumbnails) LinearLayout _thumbnails;
@@ -58,7 +62,11 @@ public class GalleryActivity extends AppCompatActivity {
         setContentView(R.layout.gallery_fragment);
         ButterKnife.inject(this);
 
-        images = getIntent().getParcelableArrayListExtra("images");
+        fromCache = getIntent().getBooleanExtra("flag", false);
+        if(!fromCache)
+            images = getIntent().getParcelableArrayListExtra("images");
+        else
+            files = (File[])getIntent().getSerializableExtra("files");
         _adapter = new GalleryPagerAdapter(this);
         _pager.setAdapter(_adapter);
         _pager.setOffscreenPageLimit(10); // how many images to load into memory
@@ -71,23 +79,27 @@ public class GalleryActivity extends AppCompatActivity {
         });
         int currentItem = getIntent().getIntExtra("position",-1);
         if(currentItem!=-1) _pager.setCurrentItem(currentItem);
-
     }
     class GalleryPagerAdapter extends PagerAdapter {
-
+        ImageLoader imageLoader;
         Context _context;
         LayoutInflater _inflater;
         Picasso picasso;
+        DisplayImageOptions options;
 
         public GalleryPagerAdapter(Context context) {
             _context = context;
             _inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             picasso = Picasso.with(context);
+            imageLoader = ImageLoader.getInstance();
+            imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+            options = new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.RGB_565)
+                    .cacheInMemory(true).cacheInMemory(true).build();
         }
 
         @Override
         public int getCount() {
-            return images.size();
+           return !fromCache?images.size():files.length;
         }
 
         @Override
@@ -97,6 +109,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
+
             View itemView = _inflater.inflate(R.layout.pager_gallery_item, container, false);
             container.addView(itemView);
 
@@ -130,8 +143,11 @@ public class GalleryActivity extends AppCompatActivity {
             //final ImageView imageView = ButterKnife.findById(itemView, R.id.image);
             final SubsamplingScaleImageView imageView = ButterKnife.findById(itemView, R.id.image);
             // Asynchronously load the image and set the thumbnail and pager view
-
-            RequestCreator creator = picasso.load(images.get(position).getLink());
+            RequestCreator creator;
+            if(!fromCache)
+                  creator = picasso.load(images.get(position).getLink());
+            else
+                  creator = picasso.load(files[position]);
             creator.resizeDimen(R.dimen.large_width, R.dimen.large_height)
                     .config(Bitmap.Config.RGB_565)
                     .centerInside().into(new Target() {
@@ -151,7 +167,10 @@ public class GalleryActivity extends AppCompatActivity {
 
                 }
             });
-            Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
+            if(!fromCache)
+                 Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
+            else
+               Picasso.with(_context).load(files[position]).config(Bitmap.Config.RGB_565).into(thumbView);
 
             return itemView;
         }

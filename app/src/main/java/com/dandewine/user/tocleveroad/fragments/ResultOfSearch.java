@@ -9,25 +9,24 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dandewine.user.tocleveroad.GalleryActivity;
+import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.adapters.ImageAdapter;
 import com.dandewine.user.tocleveroad.MainActivity;
-import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
 import com.dandewine.user.tocleveroad.model.GoogleSearchResponse;
 import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceRequest;
 import com.dandewine.user.tocleveroad.networking.SampleRetrofitSpiceService;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -50,7 +49,7 @@ public class ResultOfSearch extends Fragment {
     //rest client
     private SampleRetrofitSpiceRequest request;
     private SpiceManager spiceManager = new SpiceManager(SampleRetrofitSpiceService.class);
-    public String searchQuery; int currentPage = 1;
+    public String searchQuery; int nextPage;
     //context
     public RecyclerView recyclerView;
     public StaggeredGridLayoutManager mLayoutManager;
@@ -58,7 +57,7 @@ public class ResultOfSearch extends Fragment {
     public ArrayList<GoogleImage> imageList;
     public MainActivity context;
 
-    private boolean loading = false;
+    int requestCountFromInputFields;
     int firstVivisibleItemsGrid[] = new int[2];
 
     //==============================================================================================
@@ -99,6 +98,7 @@ public class ResultOfSearch extends Fragment {
         public void OnItemClick(View v, int position) {
             Intent intent = new Intent(getActivity(),GalleryActivity.class);
             intent.putExtra("position",position);
+            intent.putExtra("flag",false);
             intent.putParcelableArrayListExtra("images",imageList);
             startActivity(intent);
         }
@@ -131,17 +131,25 @@ public class ResultOfSearch extends Fragment {
     //HANDLING REQUEST FROM GOOGLE SEARCH API
 
     //==============================================================================================
-    public void sendRequest(String query,int page){
+    public void sendRequest(String query,int page,boolean isFromInputField){
+        if(isFromInputField) {//if user want to find example ronaldo and some later messi, image list with ronaldo will be clear
+            requestCountFromInputFields++;
+            if(requestCountFromInputFields>=2 && !TextUtils.equals(searchQuery,query))
+                imageList.clear();
+        }
         searchQuery = query;
         request = new SampleRetrofitSpiceRequest(query, page);
-       // spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
-        try {
-            spiceManager.getFromCache(GoogleSearchResponse.class, "lexus",DurationInMillis.ONE_WEEK,new RequestImageListener());
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        //spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
+           try {
+          spiceManager.getFromCache(GoogleSearchResponse.class, "messi",DurationInMillis.ONE_WEEK,new RequestImageListener());
+      }catch(Exception e){
+          e.printStackTrace();
+      }
         request=null;
     }
+
+
+
     public void updateSearchResults(@NonNull ArrayList<GoogleImage> images){
         int newSize = images.size();
         imageList.addAll(images);
@@ -167,19 +175,20 @@ public class ResultOfSearch extends Fragment {
             return !recyclerView.canScrollVertically(1) && firstVivisibleItemsGrid[0] != 0;
         }
         private void loadMoreImages(){
-            sendRequest(searchQuery,currentPage);
-            Log.d("myTag", "LAST-------HERE------PAGE "+currentPage);
+            sendRequest(searchQuery, nextPage,false);
+            Log.d("myTag", "LAST-------HERE------PAGE "+ nextPage);
         }
     }
     private class RequestImageListener implements RequestListener<GoogleSearchResponse> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(context, "failure", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Error" +spiceException.getMessage(), Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onRequestSuccess(GoogleSearchResponse s) {
             Toast.makeText(context,"success",Toast.LENGTH_SHORT).show();
-            currentPage = s.queries.getNextPage().startIndex;
+            nextPage = s.queries.getNextPage().startIndex;
+            Log.d("myTag","nextPage "+ nextPage);
             updateSearchResults(s.items);
         }
     }

@@ -1,6 +1,7 @@
 package com.dandewine.user.tocleveroad.fragments;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,10 +13,13 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.dandewine.user.tocleveroad.GalleryActivity;
 import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.adapters.FavouriteImageAdapter;
 import com.dandewine.user.tocleveroad.db.MyContentProvider;
@@ -64,10 +68,24 @@ public class Favourite extends Fragment {
         linearLayout.addView(mRecyclerView);
         return linearLayout;
     }
+    FavouriteImageAdapter.OnItemClickListener onItemClickListener = new FavouriteImageAdapter.OnItemClickListener() {
+        @Override
+        public void OnItemClick(View v, int position) {
+            Intent intent = new Intent(getActivity(), GalleryActivity.class);
+            intent.putExtra("position",position);
+            intent.putExtra("flag",true);
+            intent.putExtra("files",files);
+            startActivity(intent);
+        }
+    };
     private void initAdapterFromCache(File[] files){
         adapter = new FavouriteImageAdapter(getActivity(), files);
+        Log.d("myTag","from Cache");
+        adapter.setOnItemClickListener(onItemClickListener);
         mRecyclerView.setAdapter(adapter);
     }
+
+
     private void initAdapterWithURL(){
         Cursor cursor = getActivity().getContentResolver().query(MyContentProvider.IMAGE_CONTENT_URI,new String[]{MyContentProvider.IMAGE_TITLE,MyContentProvider.IMAGE_URL},null,null,null);
         if(cursor!=null) {
@@ -77,7 +95,9 @@ public class Favourite extends Fragment {
                 linkList.add(cursor.getString(1));
                 titles.add(cursor.getString(0));
             }
+            Log.d("myTag","from URL");
             adapter = new FavouriteImageAdapter(getActivity(),linkList,titles);
+            adapter.setOnItemClickListener(onItemClickListener);
             cursor.close();
         }
     }
