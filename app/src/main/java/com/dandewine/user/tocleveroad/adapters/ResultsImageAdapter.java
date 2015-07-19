@@ -21,11 +21,8 @@ import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.db.ToFavouriteService;
 import com.dandewine.user.tocleveroad.fragments.Favourite;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
-import com.dandewine.user.tocleveroad.other.Utils;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -39,14 +36,14 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapter.ViewHolder> {
     ArrayList<GoogleImage> imageList;
     ArrayList<String> savedURLs;
     Context context;
     OnItemClickListener mItemClickListener;
     ImageLoader loader;
 
-    public ImageAdapter(ArrayList<GoogleImage> imageList,Context context) {
+    public ResultsImageAdapter(ArrayList<GoogleImage> imageList, Context context) {
         this.imageList = imageList;
         this.context = context;
         loader = ImageLoader.getInstance();
@@ -66,7 +63,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         final GoogleImage.Image image = imageList.get(i).getImage();
         final String link = image.getThumbnailLink();
         Picasso.with(context).load(link).config(Bitmap.Config.RGB_565)
-                .resize((int)image.getThumbnailWidth(),(int)image.getThumbnailHeight()).centerInside().into(viewHolder.image);
+                .resize((int) image.getThumbnailWidth(), (int) image.getThumbnailHeight()).centerInside().into(viewHolder.image);
        /* final DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .cacheInMemory(true)
@@ -127,7 +124,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                     // TODO: 15.07.2015 this is no working with some images, I tried Glide,Picasso,UIL,Ion.
                     bitmap = Picasso.with(context).load(outerImg.getLink()).memoryPolicy(MemoryPolicy.NO_STORE)
                             .config(Bitmap.Config.RGB_565)
-                            .resize(width, height).get();
+                            .resize(width, height)
+                            .onlyScaleDown()
+                            .get();
                     Log.d("myTag", String.format("imageSize = %sx%s, byteCount = %s", bitmap.getWidth(), bitmap.getHeight(), bitmap.getByteCount() / 1024));
                     saveToExternal(bitmap, outerImg.getTitle());
                     updateFavouriteAdapter(outerImg.getTitle(), outerImg.getLink(), true);

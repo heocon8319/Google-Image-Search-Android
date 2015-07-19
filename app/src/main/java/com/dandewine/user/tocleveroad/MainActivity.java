@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     public ViewPager pager;
     public static boolean isListView;
     private Menu menu;
-    public int page = 1;
     public String query;
 
     @Override
@@ -151,11 +150,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSearch(String searchTerm){
-                query=searchTerm;
                 toolbar.setTitle("Google Image Searcher");
                 if(isConnected()) {
                    ResultOfSearch fragment = ((ResultOfSearch) getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0)));
-                    fragment.sendRequest(searchTerm,1,true);
+                    fragment.sendRequest(searchTerm,true);
                 }else
                     Toast.makeText(MainActivity.this,
                             "Sorry, seems we are haven't connection with network",Toast.LENGTH_SHORT).show();

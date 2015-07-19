@@ -15,7 +15,7 @@ public interface GoogleSearchInterface {
             "image)";
     static final String QUERY = "/v1?key="+API_KEY+
                                 "&cx="+CUSTOM_SEARCH_ID+
-                                "&searchType="+SEARCH_TYPE_IMAGE+FILTER+"&num=10";
+                                "&searchType="+SEARCH_TYPE_IMAGE+FILTER;
 
     @GET(QUERY)
     public GoogleSearchResponse search(@Query("q") String query,

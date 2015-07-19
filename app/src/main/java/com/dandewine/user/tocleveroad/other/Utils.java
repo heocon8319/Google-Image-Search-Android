@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory;
 
 public class Utils {
 
-    private static StringBuilder builder = new StringBuilder();
+    private  static StringBuilder builder = new StringBuilder();
 
     public static String concat(Object...rows){
         builder.setLength(0);

@@ -59,12 +59,13 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
     }
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Log.d("myTag","onBindViewHolder, FavouriteAdapter");
+        Log.d("myTag", "onBindViewHolder, FavouriteAdapter");
         holder.unFavouriteImage.setVisibility(View.GONE);
         holder.favouriteImage.setVisibility(View.VISIBLE);
         if(fromCache)
             Picasso.with(context).load(pathList.get(position))
                     .resizeDimen(R.dimen.large_width, R.dimen.large_height)
+                    .onlyScaleDown()
                     .config(Bitmap.Config.RGB_565).centerInside().into(holder.image);
         holder.title.setText(titles.get(position));
         holder.favouriteImage.setOnClickListener(new View.OnClickListener() {
