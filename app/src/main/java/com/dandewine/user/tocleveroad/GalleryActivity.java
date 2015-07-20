@@ -75,7 +75,8 @@ public class GalleryActivity extends AppCompatActivity {
                 files = new ArrayList<>();
             String root = Environment.getExternalStorageDirectory().toString();
             File dir = new File(Utils.concat(root,"/ImageSearcherCache/"));
-            Collections.addAll(files, dir.listFiles());
+            if(dir.exists())
+                Collections.addAll(files, dir.listFiles());
         }
 
         _adapter = new GalleryPagerAdapter(this);
@@ -158,20 +159,6 @@ public class GalleryActivity extends AppCompatActivity {
             }
             else
                 Picasso.with(_context).load(files.get(position)).config(Bitmap.Config.RGB_565).resizeDimen(R.dimen.large_width,R.dimen.large_height).centerInside().into(imageView);
-
-
-/*
-DisplayImageOptions options = new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.EXACTLY).cacheOnDisk(true).cacheInMemory(true)
-        .bitmapConfig(Bitmap.Config.RGB_565).build();
-            final ImageAware imageAware = new ImageViewAware(imageView,true);
-                  imageLoader.displayImage(images.get(position).getLink(),imageAware,options,new SimpleImageLoadingListener(){
-                      @Override
-                      public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                          super.onLoadingComplete(imageUri, view, loadedImage);
-                          imageAware.setImageBitmap(loadedImage);
-                      }
-                  });
-*/
           //thumbnails
             if(!fromCache)
                  Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
