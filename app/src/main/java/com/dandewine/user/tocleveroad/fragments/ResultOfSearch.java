@@ -139,10 +139,9 @@ public class ResultOfSearch extends Fragment {
         }
         searchQuery = query;
         request = new SampleRetrofitSpiceRequest(query, nextPage);
-       // spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
-
+       //spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
            try {
-                 spiceManager.getFromCache(GoogleSearchResponse.class, "moto",DurationInMillis.ONE_WEEK,new RequestImageListener());
+                 spiceManager.getFromCache(GoogleSearchResponse.class, "ronaldo",DurationInMillis.ONE_WEEK,new RequestImageListener());
           }catch(Exception e){
                  e.printStackTrace();
           }

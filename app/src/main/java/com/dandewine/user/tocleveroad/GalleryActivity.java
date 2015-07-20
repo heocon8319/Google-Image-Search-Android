@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
+import com.dandewine.user.tocleveroad.other.Utils;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -45,6 +46,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -68,12 +70,17 @@ public class GalleryActivity extends AppCompatActivity {
         fromCache = getIntent().getBooleanExtra("flag", false);
         if(!fromCache)
             images = getIntent().getParcelableArrayListExtra("images");
-        else
-            files = (ArrayList<File>)getIntent().getSerializableExtra("files");
+        else {
+            if(files==null)
+                files = new ArrayList<>();
+            String root = Environment.getExternalStorageDirectory().toString();
+            File dir = new File(Utils.concat(root,"/ImageSearcherCache/"));
+            Collections.addAll(files, dir.listFiles());
+        }
 
         _adapter = new GalleryPagerAdapter(this);
         _pager.setAdapter(_adapter);
-        _pager.setOffscreenPageLimit(10); // how many images to load into memory
+        _pager.setOffscreenPageLimit(files.size()); // how many images to load into memory
 
         _closeButton.setOnClickListener(new View.OnClickListener() {
             @Override

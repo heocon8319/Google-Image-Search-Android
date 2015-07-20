@@ -70,14 +70,6 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
         final String link = image.getThumbnailLink();
         Picasso.with(context).load(link).config(Bitmap.Config.RGB_565)
                 .resize((int) image.getThumbnailWidth(), (int) image.getThumbnailHeight()).centerInside().into(viewHolder.image);
-       /* final DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .resetViewBeforeLoading(true)//it's important for recycling view
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .build();
-        loader.displayImage(link,viewHolder.image,options);*/
         viewHolder.text.setText(outerImg.getTitle());
         viewHolder.favouriteCheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,7 +176,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
             try {
                 FileOutputStream out = new FileOutputStream(checkFile);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                updateFavouriteAdapter(fileName, checkFile.getAbsolutePath(), true);
+
                 Log.d("myTag","write file to external");
                 out.flush();
                 out.close();
@@ -192,7 +184,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
                 e.printStackTrace();
             }
         }
-
+        updateFavouriteAdapter(fileName, checkFile.getAbsolutePath(), true);
 
     }
     //memory log for testing memory usage

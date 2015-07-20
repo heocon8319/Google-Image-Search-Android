@@ -91,7 +91,6 @@ public class Favourite extends Fragment {
             Intent intent = new Intent(getActivity(), GalleryActivity.class);
             intent.putExtra("position",position);
             intent.putExtra("flag",true);
-            intent.putExtra("files",files);
             startActivity(intent);
         }
     };
@@ -142,7 +141,7 @@ public class Favourite extends Fragment {
         private void loadMoreImages(){
             String lastName = files.get(files.size()-1).getName();
             int size = dir.listFiles().length;
-            if(size>files.size()) {//if on SD more files than have adapter
+            if(size>adapter.getItemCount()) {//if on SD more files than have adapter
                 for (int i = size - 1; i >= 0; i--) {
                     if (TextUtils.equals(dir.listFiles()[i].getName(), lastName)) //last file name on adapter == last file name on SD
                         break;
