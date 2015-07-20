@@ -34,6 +34,7 @@ import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -42,6 +43,7 @@ import com.squareup.picasso.Transformation;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -52,6 +54,7 @@ public class GalleryActivity extends AppCompatActivity {
     public  ArrayList<GoogleImage> images;
     public ArrayList<File> files;
     boolean fromCache;
+    ImageLoader imageLoader;
 
     @InjectView(R.id.pager) ViewPager _pager;
     @InjectView(R.id.thumbnails) LinearLayout _thumbnails;
@@ -82,7 +85,6 @@ public class GalleryActivity extends AppCompatActivity {
         if(currentItem!=-1) _pager.setCurrentItem(currentItem);
     }
     class GalleryPagerAdapter extends PagerAdapter {
-        ImageLoader imageLoader;
         Context _context;
         LayoutInflater _inflater;
         Picasso picasso;
@@ -95,7 +97,7 @@ public class GalleryActivity extends AppCompatActivity {
             imageLoader = ImageLoader.getInstance();
             imageLoader.init(ImageLoaderConfiguration.createDefault(context));
             options = new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.RGB_565)
-                    .cacheInMemory(true).cacheInMemory(true).build();
+                    .imageScaleType(ImageScaleType.EXACTLY).cacheOnDisk(true).cacheInMemory(true).build();
         }
 
         @Override
@@ -141,33 +143,29 @@ public class GalleryActivity extends AppCompatActivity {
             });
             _thumbnails.addView(thumbView);
 
-            //final ImageView imageView = ButterKnife.findById(itemView, R.id.image);
-            final SubsamplingScaleImageView imageView = ButterKnife.findById(itemView, R.id.image);
+            final ImageView imageView = ButterKnife.findById(itemView, R.id.image);
+           // final SubsamplingScaleImageView imageView = ButterKnife.findById(itemView, R.id.image);
             // Asynchronously load the image and set the thumbnail and pager view
-            RequestCreator creator;
-            if(!fromCache)
-                  creator = picasso.load(images.get(position).getLink());
+            if(!fromCache) {
+                getImageFromNetwork(images.get(position).getLink(),imageView,options);
+            }
             else
-                  creator = picasso.load(files.get(position));
-            creator.resizeDimen(R.dimen.large_width, R.dimen.large_height)
-                    .config(Bitmap.Config.RGB_565)
-                    .centerInside().into(new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    Log.d("myTag", String.format("bitmap size = %sx%s,byteCount = %s", bitmap.getWidth(), bitmap.getHeight(), bitmap.getByteCount() / 1024));
-                    imageView.setImage(ImageSource.bitmap(bitmap));
-                }
+                Picasso.with(_context).load(files.get(position)).config(Bitmap.Config.RGB_565).resizeDimen(R.dimen.large_width,R.dimen.large_height).centerInside().into(imageView);
 
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    Log.d("myTag", "onBitmapFailed");
-                }
 
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                }
-            });
+/*
+DisplayImageOptions options = new DisplayImageOptions.Builder().imageScaleType(ImageScaleType.EXACTLY).cacheOnDisk(true).cacheInMemory(true)
+        .bitmapConfig(Bitmap.Config.RGB_565).build();
+            final ImageAware imageAware = new ImageViewAware(imageView,true);
+                  imageLoader.displayImage(images.get(position).getLink(),imageAware,options,new SimpleImageLoadingListener(){
+                      @Override
+                      public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                          super.onLoadingComplete(imageUri, view, loadedImage);
+                          imageAware.setImageBitmap(loadedImage);
+                      }
+                  });
+*/
+          //thumbnails
             if(!fromCache)
                  Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
             else
@@ -183,6 +181,23 @@ public class GalleryActivity extends AppCompatActivity {
         private void logMem(){
             Log.d("myTagg", String.format("Total memory = %s", Runtime.getRuntime().totalMemory() / 1024));
         }
+    }
+    private void getImageFromNetwork(String url, final ImageView imageView,DisplayImageOptions options){
+        final ImageAware imageAware = new ImageViewAware(imageView,true);
+        imageLoader.displayImage(url,imageAware,options,new SimpleImageLoadingListener(){
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                super.onLoadingComplete(imageUri, view, loadedImage);
+                Log.d("myTag", String.format("imageSize = %sx%s, byteCount = %s", loadedImage.getWidth(), loadedImage.getHeight(), loadedImage.getByteCount() / 1024));
+                imageAware.setImageBitmap(loadedImage);
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                super.onLoadingFailed(imageUri, view, failReason);
+                imageView.setImageResource(R.mipmap.cant_find);
+            }
+        });
     }
 
 }

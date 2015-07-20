@@ -3,6 +3,7 @@ package com.dandewine.user.tocleveroad.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -21,9 +22,13 @@ import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.db.ToFavouriteService;
 import com.dandewine.user.tocleveroad.fragments.Favourite;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -42,13 +47,14 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     Context context;
     OnItemClickListener mItemClickListener;
     ImageLoader loader;
-
+    DisplayImageOptions options;
     public ResultsImageAdapter(ArrayList<GoogleImage> imageList, Context context) {
         this.imageList = imageList;
         this.context = context;
         loader = ImageLoader.getInstance();
         loader.init(ImageLoaderConfiguration.createDefault(context));
         savedURLs =  ((GoogleImageSearcher)context.getApplicationContext()).getUrlList();
+        options = new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.RGB_565).cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY).build();
     }
 
     @Override
@@ -112,29 +118,29 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
         }
 
     }
-    //get the original image size, save to SD,
+    //get the  image, save to SD,
     private void checkFavouriteImage(final GoogleImage outerImg,final GoogleImage.Image image){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+
                 try {
-                    Bitmap bitmap;
                     int width = (int) (image.getWidth() / 2);
                     int height = (int) (image.getHeight() / 2);
-                    // TODO: 15.07.2015 this is no working with some images, I tried Glide,Picasso,UIL,Ion.
-                    bitmap = Picasso.with(context).load(outerImg.getLink()).memoryPolicy(MemoryPolicy.NO_STORE)
-                            .config(Bitmap.Config.RGB_565)
-                            .resize(width, height)
-                            .onlyScaleDown()
-                            .get();
-                    Log.d("myTag", String.format("imageSize = %sx%s, byteCount = %s", bitmap.getWidth(), bitmap.getHeight(), bitmap.getByteCount() / 1024));
-                    saveToExternal(bitmap, outerImg.getTitle());
-                    updateFavouriteAdapter(outerImg.getTitle(), outerImg.getLink(), true);
+                    // TODO: 15.07.2015 this is no working with some images, I tried Glide,Picasso,UIL,Ion,Fresco.
+
+                    loader.loadImage(outerImg.getLink(), new ImageSize(width, height), options, new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            super.onLoadingComplete(imageUri, view, loadedImage);
+                            Log.d("myTag", String.format("imageSize = %sx%s, byteCount = %s", loadedImage.getWidth(), loadedImage.getHeight(), loadedImage.getByteCount() / 1024));
+                            saveToExternal(loadedImage, outerImg.getTitle());
+                            //updateFavouriteAdapter(outerImg.getTitle(), outerImg.getLink(), true);
+                        }
+                    });
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        }).start();
+
     }
     private void goToService(String title,String url){
         Intent intent = new Intent(context, ToFavouriteService.class);
@@ -178,6 +184,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
             try {
                 FileOutputStream out = new FileOutputStream(checkFile);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                updateFavouriteAdapter(fileName, checkFile.getAbsolutePath(), true);
                 Log.d("myTag","write file to external");
                 out.flush();
                 out.close();
@@ -247,5 +254,10 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mItemClickListener = onItemClickListener;
     }
-
+    /*bitmap= Picasso.with(context)
+                                  .load(outerImg.getLink()).memoryPolicy(MemoryPolicy.NO_STORE)
+                            .config(Bitmap.Config.RGB_565)
+                            .resize(width, height)
+                            .onlyScaleDown()
+                            .get();*/
 }

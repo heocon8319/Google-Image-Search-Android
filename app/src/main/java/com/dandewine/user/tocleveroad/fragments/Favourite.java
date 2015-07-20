@@ -142,14 +142,13 @@ public class Favourite extends Fragment {
         private void loadMoreImages(){
             String lastName = files.get(files.size()-1).getName();
             int size = dir.listFiles().length;
-            File[] test = dir.listFiles();
             if(size>files.size()) {//if on SD more files than have adapter
                 for (int i = size - 1; i >= 0; i--) {
                     if (TextUtils.equals(dir.listFiles()[i].getName(), lastName)) //last file name on adapter == last file name on SD
                         break;
                     File f = dir.listFiles()[i];
                     files.add(f);
-                    adapter.addItem(f.getName(), Utils.concat("file:" + f.getAbsolutePath()), i);
+                    adapter.addItem(f.getName(), Utils.concat("file:",f.getAbsolutePath()), i);
                 }
                 adapter.notifyItemRangeChanged(0, files.size());
             }

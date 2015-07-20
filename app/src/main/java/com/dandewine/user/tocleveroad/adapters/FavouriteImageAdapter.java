@@ -130,8 +130,13 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
         return file.delete();
     }
     public void addItem(String title,String url,int index){
+        if(fromCache && !url.contains("file:")){
+            File file = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache",title+".png");
+            if(file.exists())
+                pathList.add("file:"+file.getAbsolutePath());
+        }else
+             pathList.add(url);
         titles.add(title);
-        pathList.add(url);
         notifyItemInserted(index);
         notifyItemRangeChanged(0, getItemCount());
     }

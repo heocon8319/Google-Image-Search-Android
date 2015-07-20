@@ -95,6 +95,7 @@ public class ResultOfSearch extends Fragment {
     ResultsImageAdapter.OnItemClickListener adapterListener = new ResultsImageAdapter.OnItemClickListener() {
         @Override
         public void OnItemClick(View v, int position) {
+            Log.d("myTag",""+imageList.get(position).getLink());
             Intent intent = new Intent(getActivity(),GalleryActivity.class);
             intent.putExtra("position",position);
             intent.putExtra("flag",false);
@@ -162,11 +163,11 @@ public class ResultOfSearch extends Fragment {
 
             if(!MainActivity.isListView) {
                 if (isEnd()) {
-                    loadMoreImages();
+                    //loadMoreImages();
                 }
             }else{
                 if(isEnd()){
-                    loadMoreImages();
+                    //loadMoreImages();
                 }
             }
         }
