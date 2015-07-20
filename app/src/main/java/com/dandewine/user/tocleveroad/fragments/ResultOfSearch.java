@@ -137,14 +137,19 @@ public class ResultOfSearch extends Fragment {
             if(requestCountFromInputFields>=2 && !TextUtils.equals(searchQuery,query))
                 imageList.clear();
         }
-        searchQuery = query;
+
         request = new SampleRetrofitSpiceRequest(query, nextPage);
-       //spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
-           try {
+        if(TextUtils.equals(query,searchQuery) && nextPage>10)
+            spiceManager.execute(request, query+String.format("(%s)",nextPage), DurationInMillis.ONE_WEEK, new RequestImageListener());
+        else
+            spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
+        searchQuery = query;
+
+           /*try {
                  spiceManager.getFromCache(GoogleSearchResponse.class, "ronaldo",DurationInMillis.ONE_WEEK,new RequestImageListener());
           }catch(Exception e){
                  e.printStackTrace();
-          }
+          }*/
         request=null;
 
     }
@@ -162,11 +167,11 @@ public class ResultOfSearch extends Fragment {
 
             if(!MainActivity.isListView) {
                 if (isEnd()) {
-                    //loadMoreImages();
+                    loadMoreImages();
                 }
             }else{
                 if(isEnd()){
-                    //loadMoreImages();
+                    loadMoreImages();
                 }
             }
         }
