@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.dandewine.user.tocleveroad.fragments.Favourite;
 import com.dandewine.user.tocleveroad.fragments.ResultOfSearch;
 import com.dandewine.user.tocleveroad.other.SlidingTabLayout;
 import com.dandewine.user.tocleveroad.adapters.ViewPagerAdapter;
@@ -25,36 +26,58 @@ public class MainActivity extends AppCompatActivity {
     public ViewPagerAdapter pagerAdapter;
     private SlidingTabLayout tabs;
     public ViewPager pager;
-    public static boolean isListView;
-    private Menu menu;
+    public  boolean resultsAsListview,favoriteAsLisview;
+    public Menu menu;
+    MenuItem item;
     public String query;
+    private ResultOfSearch resultFragment;
+    private Favourite favouriteFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        isListView = true;
+        resultsAsListview = true;
+        favoriteAsLisview = false;
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
         initTabs();//устанавливаем вкладки
+        resultFragment = ResultOfSearch.getInstance();
+        favouriteFragment = Favourite.getInstance();
+
+
 
 
     }
-    private void toggle(){
-        ResultOfSearch resultFragment = ((ResultOfSearch) getSupportFragmentManager().findFragmentByTag(pagerAdapter.getTag(0)));
+    private void toggle(boolean isFromSearch){
         MenuItem item = menu.findItem(R.id.action_toggle);
-        if(isListView){
-            item.setIcon(R.mipmap.grid);
-            item.setTitle("Show as grid");
-            isListView=false;
-            resultFragment.toggle(1);
+        if(isFromSearch) {
+            if (resultsAsListview) {
+                item.setIcon(R.mipmap.grid);
+                item.setTitle("Show as grid");
+                resultsAsListview = false;
+                resultFragment.toggle(1);
+
+            } else {
+                item.setIcon(R.mipmap.listiview);
+                item.setTitle("Show as list");
+                resultsAsListview = true;
+                resultFragment.toggle(0);
+            }
         }else{
-            item.setIcon(R.mipmap.listiview);
-            item.setTitle("Show as list");
-            isListView = true;
-            resultFragment.toggle(0);
+            if(favoriteAsLisview){
+                item.setIcon(R.mipmap.grid);
+                favouriteFragment.toggle(1);
+                favoriteAsLisview = false;
+            }else{
+                item.setIcon(R.mipmap.listiview);
+                favouriteFragment.toggle(0);
+                favoriteAsLisview = true;
+            }
         }
+
     }
+
     private void initTabs(){
         CharSequence Titles[]={
                 getResources().getText(R.string.search),
@@ -71,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-
+                changeIcon(position);
             }
 
             @Override
@@ -90,10 +113,24 @@ public class MainActivity extends AppCompatActivity {
         tabs.setViewPager(pager);
 
     }
+    private void changeIcon(int position){
+        if (position == 1) {
+            if (favouriteFragment.mLayoutManager.getSpanCount() == 1)
+                item.setIcon(R.mipmap.grid);
+            else
+                item.setIcon(R.mipmap.listiview);
+        } else {
+            if (resultFragment.mLayoutManager.getSpanCount() == 1)
+                item.setIcon(R.mipmap.grid);
+            else
+                item.setIcon(R.mipmap.listiview);
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
+        item = menu.findItem(R.id.action_toggle);
         return true;
     }
 
@@ -104,9 +141,11 @@ public class MainActivity extends AppCompatActivity {
             openSearch();
             return true;
         }else{
-            toggle();
+            if(pager.getCurrentItem()==0) toggle(true);
+            else toggle(false);
+            return true;
         }
-        return super.onOptionsItemSelected(item);
+
     }
     public void openSearch() {//события связанные с поисковым вводом
         toolbar.setTitle("");

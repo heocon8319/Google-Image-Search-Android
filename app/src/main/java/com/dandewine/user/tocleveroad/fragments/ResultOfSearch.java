@@ -76,7 +76,6 @@ public class ResultOfSearch extends Fragment {
 
         recyclerView = new RecyclerView(getActivity());
         recyclerView.setHasFixedSize(true);
-        recyclerView.setVerticalScrollBarEnabled(true);
         mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         if(imageList==null)
             imageList = new ArrayList<>();
@@ -132,7 +131,7 @@ public class ResultOfSearch extends Fragment {
 
     //==============================================================================================
     public void sendRequest(@NonNull String query,boolean isFromInputField){
-        if(isFromInputField) {//if user want to find example ronaldo and some later messi, image list with ronaldo will be clear
+        if(isFromInputField) {//if user want to find example ronaldo and some later messi, image list with ronaldo will be cleared
             requestCountFromInputFields++;
             if(requestCountFromInputFields>=2 && !TextUtils.equals(searchQuery,query))
                 imageList.clear();
@@ -144,6 +143,7 @@ public class ResultOfSearch extends Fragment {
         else
             spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
         searchQuery = query;
+        nextPage+=10;
 
            /*try {
                  spiceManager.getFromCache(GoogleSearchResponse.class, "ronaldo",DurationInMillis.ONE_WEEK,new RequestImageListener());
@@ -156,8 +156,9 @@ public class ResultOfSearch extends Fragment {
 
     public void updateSearchResults(@NonNull ArrayList<GoogleImage> images){
         int newSize = images.size();
+        int oldSize = imageList.size();
         imageList.addAll(images);
-        adapter.notifyItemRangeChanged(0,newSize);
+        adapter.notifyItemRangeChanged(0,newSize+oldSize);//// TODO: 20.07.2015 fix this crap
     }
     private class OnResultsScrollListener extends RecyclerView.OnScrollListener {
         @Override
@@ -165,7 +166,7 @@ public class ResultOfSearch extends Fragment {
 
             firstVivisibleItemsGrid = mLayoutManager.findFirstVisibleItemPositions(firstVivisibleItemsGrid);
 
-            if(!MainActivity.isListView) {
+            if(!context.resultsAsListview) {
                 if (isEnd()) {
                     loadMoreImages();
                 }
@@ -186,11 +187,11 @@ public class ResultOfSearch extends Fragment {
     private final class RequestImageListener implements RequestListener<GoogleSearchResponse> {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(context, "Error" +spiceException.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Sorry, cannot load images :(", Toast.LENGTH_SHORT).show();
+            Log.d("myTag",spiceException.getMessage());
         }
         @Override
         public void onRequestSuccess(GoogleSearchResponse s) {
-            Toast.makeText(context,"success",Toast.LENGTH_SHORT).show();
             nextPage = s.queries.getNextPage().startIndex;
             Log.d("myTag","nextPage "+ nextPage);
             updateSearchResults(s.items);
