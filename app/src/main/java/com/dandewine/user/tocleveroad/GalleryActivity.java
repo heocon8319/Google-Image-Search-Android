@@ -157,7 +157,7 @@ public class GalleryActivity extends AppCompatActivity {
             if(!fromCache) {
                 getImageFromNetwork(images.get(position).getLink(),imageView,options);
             }
-            else
+            else //// TODO: 22.07.2015 app eats too much memory ~70mb(if user in search tab want to click and slide images)
                 Picasso.with(_context).load(files.get(position)).config(Bitmap.Config.RGB_565).resizeDimen(R.dimen.large_width,R.dimen.large_height).centerInside().into(imageView);
           //thumbnails
             if(!fromCache)
