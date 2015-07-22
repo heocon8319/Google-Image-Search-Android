@@ -1,2 +1,2 @@
 # GoogleImageSearcher
-Testing google custom api search
+Testing Google Custom Search API
