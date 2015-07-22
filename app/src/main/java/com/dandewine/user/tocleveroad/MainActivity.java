@@ -127,8 +127,6 @@ public class MainActivity extends AppCompatActivity {
             else
                 item.setIcon(R.mipmap.listiview);
         }
-
-
     }
 
     @Override
