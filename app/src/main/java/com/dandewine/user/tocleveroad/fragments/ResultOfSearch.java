@@ -73,7 +73,7 @@ public class ResultOfSearch extends Fragment {
         ButterKnife.inject(this, linearLayout);
         setRetainInstance(true);
         context = (MainActivity)getActivity();
-
+        setRetainInstance(true);
         recyclerView = new RecyclerView(getActivity());
         recyclerView.setHasFixedSize(true);
         mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);

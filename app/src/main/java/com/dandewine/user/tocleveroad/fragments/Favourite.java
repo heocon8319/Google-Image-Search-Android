@@ -56,6 +56,7 @@ public class Favourite extends Fragment {
         linearLayout.setGravity(Gravity.CENTER);
         ButterKnife.inject(this, linearLayout);
         context = (MainActivity)getActivity();
+        setRetainInstance(true);
 
         mLayoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView = new RecyclerView(getActivity());
@@ -76,8 +77,6 @@ public class Favourite extends Fragment {
            files.add(dir.listFiles()[i]);
             lastIdx=i;
         }
-        Log.d("myTag","last name = "+files.get(lastIdx).getName());
-
         if(files!=null)
             initAdapterFromCache(files);
         else

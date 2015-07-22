@@ -16,6 +16,8 @@ import com.dandewine.user.tocleveroad.other.SlidingTabLayout;
 import com.dandewine.user.tocleveroad.adapters.ViewPagerAdapter;
 import com.quinny898.library.persistentsearch.SearchBox;
 
+import java.lang.ref.WeakReference;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -28,11 +30,10 @@ public class MainActivity extends AppCompatActivity {
     public ViewPager pager;
     public  boolean resultsAsListview,favoriteAsLisview;
     public Menu menu;
-    MenuItem item;
-    public String query;
+    private MenuItem item;
     private ResultOfSearch resultFragment;
     private Favourite favouriteFragment;
-
+    int count=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         initTabs();//устанавливаем вкладки
         resultFragment = ResultOfSearch.getInstance();
         favouriteFragment = Favourite.getInstance();
-
 
 
 
@@ -94,7 +94,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                changeIcon(position);
+                if(count!=0)//fix this crap
+                    changeIcon(position);
+                count++;
             }
 
             @Override
@@ -125,12 +127,31 @@ public class MainActivity extends AppCompatActivity {
             else
                 item.setIcon(R.mipmap.listiview);
         }
+
+
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("searchState", resultsAsListview);
+        outState.putBoolean("favoriteState", favoriteAsLisview);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        resultsAsListview = savedInstanceState.getBoolean("searchState");
+        favoriteAsLisview = savedInstanceState.getBoolean("favoriteState");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
         item = menu.findItem(R.id.action_toggle);
+        favouriteFragment = Favourite.getInstance();
+        changeIcon(pager.getCurrentItem());
         return true;
     }
 

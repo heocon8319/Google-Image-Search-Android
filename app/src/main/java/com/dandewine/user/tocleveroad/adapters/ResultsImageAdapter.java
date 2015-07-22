@@ -124,7 +124,6 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
                             super.onLoadingComplete(imageUri, view, loadedImage);
                             Log.d("myTag", String.format("imageSize = %sx%s, byteCount = %s", loadedImage.getWidth(), loadedImage.getHeight(), loadedImage.getByteCount() / 1024));
                             saveToExternal(loadedImage, outerImg.getTitle());
-                            //updateFavouriteAdapter(outerImg.getTitle(), outerImg.getLink(), true);
                         }
                     });
 
@@ -193,8 +192,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     }
     //update adapter that handle favorite images, if third parameter true it means that in favorite adapter will be added image
     private void updateFavouriteAdapter(String title, String url, boolean isAdd){
-        MainActivity activity = (MainActivity)context;
-        Favourite fragment = (Favourite)activity.getSupportFragmentManager().findFragmentByTag(activity.pagerAdapter.getTag(1));
+        Favourite fragment = Favourite.getInstance();
         if(isAdd)
             fragment.addItemFromExternal(title, url);
         else
@@ -246,10 +244,5 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mItemClickListener = onItemClickListener;
     }
-    /*bitmap= Picasso.with(context)
-                                  .load(outerImg.getLink()).memoryPolicy(MemoryPolicy.NO_STORE)
-                            .config(Bitmap.Config.RGB_565)
-                            .resize(width, height)
-                            .onlyScaleDown()
-                            .get();*/
+
 }
