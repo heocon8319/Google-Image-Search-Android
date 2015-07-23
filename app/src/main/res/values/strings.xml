@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">Google Image Search</string>
+    <string name="app_name">GIS</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="search">Search</string>
     <string name="favourite">Favourites</string>
+    <string name="no_image_text">Find the images what you want :)</string>
+    <string name="no_favor_text">Then save them in favorites</string>
 </resources>

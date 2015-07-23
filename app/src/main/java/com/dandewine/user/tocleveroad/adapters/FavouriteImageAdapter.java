@@ -16,8 +16,7 @@ import android.widget.TextView;
 
 import com.dandewine.user.tocleveroad.MainActivity;
 import com.dandewine.user.tocleveroad.R;
-import com.dandewine.user.tocleveroad.db.MyContentProvider;
-import com.dandewine.user.tocleveroad.db.ToFavouriteService;
+import com.dandewine.user.tocleveroad.db.FavouriteService;
 import com.dandewine.user.tocleveroad.fragments.ResultOfSearch;
 import com.dandewine.user.tocleveroad.other.Utils;
 import com.squareup.picasso.Picasso;
@@ -152,8 +151,8 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
         resultFragment.adapter.removeSavedUrl(pathList.get(position), false);
     }
     private void removeFromDB(String url){
-        Intent intent = new Intent(context, ToFavouriteService.class);
-        intent.putExtra("action",ToFavouriteService.DELETE_BY_URL);
+        Intent intent = new Intent(context, FavouriteService.class);
+        intent.putExtra("action", FavouriteService.DELETE_BY_URL);
         intent.putExtra("url",url);
         context.startService(intent);
     }

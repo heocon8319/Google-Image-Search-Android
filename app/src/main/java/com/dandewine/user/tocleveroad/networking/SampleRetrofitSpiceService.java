@@ -19,6 +19,7 @@ public class SampleRetrofitSpiceService extends RetrofitGsonSpiceService {
                 .setEndpoint(getServerUrl());
     }
 
+
     @Override
     protected String getServerUrl() {
         return GoogleSearchInterface.BASE_URL;

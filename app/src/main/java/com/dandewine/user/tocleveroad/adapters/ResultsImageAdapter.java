@@ -3,7 +3,6 @@ package com.dandewine.user.tocleveroad.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,9 +16,8 @@ import android.widget.TextView;
 
 
 import com.dandewine.user.tocleveroad.GoogleImageSearcher;
-import com.dandewine.user.tocleveroad.MainActivity;
 import com.dandewine.user.tocleveroad.R;
-import com.dandewine.user.tocleveroad.db.ToFavouriteService;
+import com.dandewine.user.tocleveroad.db.FavouriteService;
 import com.dandewine.user.tocleveroad.fragments.Favourite;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -29,7 +27,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 
@@ -134,10 +131,10 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
 
     }
     private void goToService(String title,String url){
-        Intent intent = new Intent(context, ToFavouriteService.class);
+        Intent intent = new Intent(context, FavouriteService.class);
         intent.putExtra("title", title);
         intent.putExtra("url", url);
-        intent.putExtra("action", ToFavouriteService.ADD_IMAGE);
+        intent.putExtra("action", FavouriteService.ADD_IMAGE);
         context.startService(intent);
     }
     //this method for unchecking heartIcon  if bookmark was chosen early, and user delete image
@@ -156,9 +153,9 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     }
     //delete image from DB
     private void goToService(String url){
-        Intent intent = new Intent(context, ToFavouriteService.class);
+        Intent intent = new Intent(context, FavouriteService.class);
         intent.putExtra("url", url);
-        intent.putExtra("action", ToFavouriteService.DELETE_BY_URL);
+        intent.putExtra("action", FavouriteService.DELETE_BY_URL);
         context.startService(intent);
     }
     //save image to SD

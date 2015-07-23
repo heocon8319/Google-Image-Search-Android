@@ -7,12 +7,12 @@ import android.net.Uri;
 import android.util.Log;
 
 
-public class ToFavouriteService extends IntentService {
+public class FavouriteService extends IntentService {
 
     public static final int ADD_IMAGE=1;
     public static final int DELETE_BY_ID=2;
     public static final int DELETE_BY_URL=3;
-    public ToFavouriteService() {
+    public FavouriteService() {
         super("saveImageToDB");
         Log.d("myTag","onCreateService");
     }

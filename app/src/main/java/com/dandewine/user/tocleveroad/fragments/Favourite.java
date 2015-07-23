@@ -31,7 +31,6 @@ import butterknife.ButterKnife;
 
 public class Favourite extends Fragment {
 
-
     static Favourite resultFragment;
     public static Favourite getInstance(){
         if(resultFragment==null) {
@@ -39,7 +38,6 @@ public class Favourite extends Fragment {
             return resultFragment;
         }else
             return resultFragment;
-
     }
     public FavouriteImageAdapter adapter;
     public RecyclerView mRecyclerView;
@@ -69,13 +67,11 @@ public class Favourite extends Fragment {
 
         dir = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache");
         files = new ArrayList<>();
-        int lastIdx=0;
         for (int i = 0; i < 10 ; i++) {
 
             if(i>=dir.listFiles().length)
                 break;
            files.add(dir.listFiles()[i]);
-            lastIdx=i;
         }
         if(files!=null)
             initAdapterFromCache(files);

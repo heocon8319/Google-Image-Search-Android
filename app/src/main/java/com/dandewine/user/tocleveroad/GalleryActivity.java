@@ -81,7 +81,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         _adapter = new GalleryPagerAdapter(this);
         _pager.setAdapter(_adapter);
-        _pager.setOffscreenPageLimit(5); // how many images to load into memory
+        _pager.setOffscreenPageLimit(1); // how many images to load into memory
 
         _closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
