@@ -2,6 +2,9 @@ package com.dandewine.user.tocleveroad;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,13 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.dandewine.user.tocleveroad.adapters.FixedFragmentStatePagerAdapter;
 import com.dandewine.user.tocleveroad.fragments.Favourite;
 import com.dandewine.user.tocleveroad.fragments.ResultOfSearch;
 import com.dandewine.user.tocleveroad.other.SlidingTabLayout;
-import com.dandewine.user.tocleveroad.adapters.ViewPagerAdapter;
 import com.quinny898.library.persistentsearch.SearchBox;
-
-import java.lang.ref.WeakReference;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -25,9 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
     @InjectView(R.id.toolbar) Toolbar toolbar;
     @InjectView(R.id.searchbox) SearchBox searchBox;
+    @InjectView(R.id.tabs) SlidingTabLayout tabs;
+    @InjectView(R.id.viewpager) ViewPager pager;
     public ViewPagerAdapter pagerAdapter;
-    private SlidingTabLayout tabs;
-    public ViewPager pager;
     public  boolean resultsAsListview,favoriteAsLisview;
     public Menu menu;
     private MenuItem item;
@@ -42,11 +43,9 @@ public class MainActivity extends AppCompatActivity {
         favoriteAsLisview = false;
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
-        initTabs();//устанавливаем вкладки
+        initTabs();//set the tabs
         resultFragment = ResultOfSearch.getInstance();
         favouriteFragment = Favourite.getInstance();
-
-
 
     }
     private void toggle(boolean isFromSearch){
@@ -79,24 +78,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabs(){
-        CharSequence Titles[]={
+        CharSequence titles[]={
                 getResources().getText(R.string.search),
                 getResources().getText(R.string.favourite),
         };
-        tabs = (SlidingTabLayout)findViewById(R.id.tabs);
-        pager =(ViewPager) findViewById(R.id.pager);
-        pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),Titles,2);
+        pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),titles);
+        pager.setAdapter(pagerAdapter);
         tabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                if (count != 0)//fix this crap
+                    changeIcon(position);
+                count++;
             }
 
             @Override
             public void onPageSelected(int position) {
-                if(count!=0)//fix this crap
-                    changeIcon(position);
-                count++;
+
             }
 
             @Override
@@ -104,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        pager.setAdapter(pagerAdapter);
         tabs.setDistributeEvenly(true);
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
@@ -113,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         tabs.setViewPager(pager);
-
     }
     private void changeIcon(int position){
         if (position == 1) {
@@ -164,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
             else toggle(false);
             return true;
         }
-
     }
     public void openSearch() {//события связанные с поисковым вводом
         toolbar.setTitle("");
@@ -190,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSearchOpened() {
                 // Use this to tint the screen
-
             }
 
             @Override
@@ -231,6 +225,45 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         return networkInfo!=null && networkInfo.isConnected();
     }
-    //слушатель ответа нашего запроса
+    public static class ViewPagerAdapter extends FixedFragmentStatePagerAdapter{
+
+        CharSequence titles[];
+        public ViewPagerAdapter(FragmentManager fm, CharSequence mTitles[]) {
+            super(fm);
+            this.titles = mTitles;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            switch (position){
+                case 0:
+                    return ResultOfSearch.getInstance();
+                case 1:
+                    return Favourite.getInstance();
+                default:
+                    throw new IllegalArgumentException("Cannot recognize what" +
+                        " fragment should be returned on this position "+position);
+
+            }
+
+        }
+
+        @Override
+        public String getTag(int position) {
+            return (String) titles[position];
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles[position];
+        }
+
+        @Override
+        public int getCount() {
+            return titles.length;
+        }
+    }
+
 
 }
