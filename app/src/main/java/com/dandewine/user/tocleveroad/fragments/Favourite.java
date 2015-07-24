@@ -130,18 +130,15 @@ public class Favourite extends Fragment {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             firstVivisibleItemsGrid = mLayoutManager.findFirstVisibleItemPositions(firstVivisibleItemsGrid);
-            if(!context.resultsAsListview){
-                if (isEnd()) loadMoreImages();
-            }
-            else if(isEnd()){
+            if(isEnd() && files.size()>=10)
                 loadMoreImages();
-            }
         }
         private boolean isEnd(){
             return !mRecyclerView.canScrollVertically(1) && firstVivisibleItemsGrid[0] != 0;
         }
         private void loadMoreImages(){
-            String lastName = files.get(files.size()-1).getName();
+            int idx = files.size()-1;
+            String lastName = files.get(idx).getName();
             int size = dir.listFiles().length;
             if(size>adapter.getItemCount()) {//if on SD more files than have adapter
                 for (int i = size - 1; i >= 0; i--) {
