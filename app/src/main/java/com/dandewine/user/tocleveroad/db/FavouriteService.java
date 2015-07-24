@@ -12,6 +12,8 @@ public class FavouriteService extends IntentService {
     public static final int ADD_IMAGE=1;
     public static final int DELETE_BY_ID=2;
     public static final int DELETE_BY_URL=3;
+    public static final int DELETE_BY_TITLE=4;
+
     public FavouriteService() {
         super("saveImageToDB");
         Log.d("myTag","onCreateService");
@@ -32,6 +34,8 @@ public class FavouriteService extends IntentService {
             case DELETE_BY_URL:
                 removeImage(url);
                 break;
+            case DELETE_BY_TITLE:
+                removeImageByTitle(title);
             default:
                 break;
         }
@@ -48,12 +52,14 @@ public class FavouriteService extends IntentService {
            result = getContentResolver().insert(MyContentProvider.IMAGE_CONTENT_URI,cv);
         Log.d("myTag", "" + result);
     }
-    /**
-     * For removing item from DB create new
-     * */
+
     private void removeImage(String url){
         getContentResolver().delete(MyContentProvider.IMAGE_CONTENT_URI,MyContentProvider.IMAGE_URL+"=?",new String[]{url});
         Log.d("myTag","removeImage");
+    }
+    private void removeImageByTitle(String title){
+        getContentResolver().delete(MyContentProvider.IMAGE_CONTENT_URI,MyContentProvider.IMAGE_TITLE+"=?",new String[]{title});
+        Log.d("myTag","removeByTitle");
     }
 
 }

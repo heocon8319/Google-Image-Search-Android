@@ -71,7 +71,7 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
             @Override
             public void onClick(View v) {
                 changeHeartImage(holder, false);
-                removeFromDB(pathList.get(position));
+                removeFromDB(titles.get(position));
                boolean deleteFromSD = removeImageFromExternal(titles.get(position));
                 Log.d("myTag","delete from SD = "+deleteFromSD);
 
@@ -149,10 +149,10 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
         resultFragment = ResultOfSearch.getInstance();
         resultFragment.adapter.removeSavedUrl(titles.get(position), false);
     }
-    private void removeFromDB(String url){
+    private void removeFromDB(String title){
         Intent intent = new Intent(context, FavouriteService.class);
-        intent.putExtra("action", FavouriteService.DELETE_BY_URL);
-        intent.putExtra("url",url);
+        intent.putExtra("action", FavouriteService.DELETE_BY_TITLE);
+        intent.putExtra("title",title);
         context.startService(intent);
     }
     public void remove(String name){
