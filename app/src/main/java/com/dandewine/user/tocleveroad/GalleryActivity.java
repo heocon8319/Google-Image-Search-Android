@@ -86,11 +86,13 @@ public class GalleryActivity extends AppCompatActivity {
         LayoutInflater _inflater;
         Picasso picasso;
         DisplayImageOptions options;
+        ArrayList<String> thumbList;
 
         public GalleryPagerAdapter(Context context) {
             _context = context;
             _inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             picasso = Picasso.with(context);
+            thumbList = new ArrayList<>();
             imageLoader = ImageLoader.getInstance();
             imageLoader.init(ImageLoaderConfiguration.createDefault(context));
             options = new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.RGB_565)
@@ -149,10 +151,18 @@ public class GalleryActivity extends AppCompatActivity {
             else //// TODO: 22.07.2015 app eats too much memory ~70mb(if user in search tab want to click and slide images)
                 Picasso.with(_context).load(files.get(position)).config(Bitmap.Config.RGB_565).resizeDimen(R.dimen.large_width,R.dimen.large_height).centerInside().into(imageView);
           //thumbnails
-            if(!fromCache)
-                 Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
-            else
-               Picasso.with(_context).load(files.get(position)).config(Bitmap.Config.RGB_565).into(thumbView);
+            if(!fromCache) {
+                if(!thumbList.contains(images.get(position).getImage().getThumbnailLink())) {
+                    Picasso.with(_context).load(images.get(position).getImage().getThumbnailLink()).into(thumbView);
+                    thumbList.add(images.get(position).getImage().getThumbnailLink());
+                }
+            }
+            else {
+                if(!thumbList.contains(files.get(position).getAbsolutePath())) {
+                    Picasso.with(_context).load(files.get(position)).config(Bitmap.Config.RGB_565).into(thumbView);
+                    thumbList.add(files.get(position).getAbsolutePath());
+                }
+            }
 
             return itemView;
         }

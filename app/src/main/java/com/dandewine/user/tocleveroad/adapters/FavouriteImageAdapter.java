@@ -146,9 +146,8 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
         notifyItemRangeChanged(0,getItemCount());
     }
     private void changeIconOnResults(int position){
-        MainActivity activity = (MainActivity)context;
-        resultFragment = (ResultOfSearch)(activity.getSupportFragmentManager().findFragmentByTag(activity.pagerAdapter.getTag(0)));
-        resultFragment.adapter.removeSavedUrl(pathList.get(position), false);
+        resultFragment = ResultOfSearch.getInstance();
+        resultFragment.adapter.removeSavedUrl(titles.get(position), false);
     }
     private void removeFromDB(String url){
         Intent intent = new Intent(context, FavouriteService.class);

@@ -54,9 +54,9 @@ public class ResultOfSearch extends Fragment {
     public ResultsImageAdapter adapter;
     public ArrayList<GoogleImage> imageList;
     public MainActivity context;
-
+    OnResultsScrollListener onResultsScrollListener;
     int requestCountFromInputFields;
-    int firstVivisibleItemsGrid[] = new int[2];
+    int firstVisibleItemsGrid[] = new int[2];
 
     //==============================================================================================
 
@@ -86,7 +86,8 @@ public class ResultOfSearch extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(new OnResultsScrollListener());
+         onResultsScrollListener = new OnResultsScrollListener(mLayoutManager);
+        recyclerView.addOnScrollListener(onResultsScrollListener);
         linearLayout.addView(recyclerView);
 
         return linearLayout;
@@ -138,46 +139,71 @@ public class ResultOfSearch extends Fragment {
         }
 
         request = new SampleRetrofitSpiceRequest(query, nextPage);
-        if(TextUtils.equals(query,searchQuery) && nextPage>10)
+       /* if(TextUtils.equals(query,searchQuery) && nextPage>10)
             spiceManager.execute(request, query+String.format("(%s)",nextPage), DurationInMillis.ONE_WEEK, new RequestImageListener());
         else
             spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
-        searchQuery = query;
+        searchQuery = query;*/
         nextPage+=10;
-
-           /*try {
-                 spiceManager.getFromCache(GoogleSearchResponse.class, "ronaldo",DurationInMillis.ONE_WEEK,new RequestImageListener());
+        //for debug
+           try {
+                 spiceManager.getFromCache(GoogleSearchResponse.class, "klitschko",DurationInMillis.ONE_WEEK,new RequestImageListener());
           }catch(Exception e){
                  e.printStackTrace();
-          }*/
+          }
         request=null;
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        onResultsScrollListener.reset(0,true);
     }
 
     public void updateSearchResults(@NonNull ArrayList<GoogleImage> images){
         int newSize = images.size();
         int oldSize = imageList.size();
         imageList.addAll(images);
-        adapter.notifyItemRangeChanged(0,newSize+oldSize);//// TODO: 20.07.2015 fix this crap
+        adapter.notifyItemRangeChanged(0,newSize+oldSize);
     }
     private class OnResultsScrollListener extends RecyclerView.OnScrollListener {
+
+        private int previousTotal = 0; // The total number of items in the dataset after the last load
+        private boolean loading = true; // True if we are still waiting for the last set of data to load.
+        private int visibleThreshold = 5; // The minimum amount of items to have below your current scroll position before loading more.
+        int visibleItemCount, totalItemCount;
+
+        private StaggeredGridLayoutManager mLayoutManager;
+
+        public OnResultsScrollListener(StaggeredGridLayoutManager mLayoutManager) {
+            this.mLayoutManager = mLayoutManager;
+        }
+
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-            firstVivisibleItemsGrid = mLayoutManager.findFirstVisibleItemPositions(firstVivisibleItemsGrid);
-
-            if(!context.resultsAsListview) {
-                if (isEnd()) {
-                    loadMoreImages();
-                }
-            }else{
-                if(isEnd()){
-                    loadMoreImages();
+            visibleItemCount = recyclerView.getChildCount();
+            totalItemCount = mLayoutManager.getItemCount();
+            firstVisibleItemsGrid = mLayoutManager.findFirstVisibleItemPositions(firstVisibleItemsGrid);
+            if(loading){
+                if(totalItemCount>previousTotal){
+                    loading=false;
+                    previousTotal=totalItemCount;
                 }
             }
+            if(!loading && (totalItemCount-firstVisibleItemsGrid[0])<=(firstVisibleItemsGrid[0]+visibleThreshold)){
+                loadMoreImages();
+                loading=true;
+            }
+
+        }
+        public void reset(int previousTotal, boolean loading) {
+            this.previousTotal = previousTotal;
+            this.loading = loading;
         }
         private boolean isEnd(){
-            return !recyclerView.canScrollVertically(1) && firstVivisibleItemsGrid[0] != 0;
+            return !recyclerView.canScrollVertically(1) && firstVisibleItemsGrid[0] != 0;
         }
         private void loadMoreImages(){
             sendRequest(searchQuery, false);
