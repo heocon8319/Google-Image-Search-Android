@@ -14,8 +14,9 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways"
-            android:layout_height="wrap_content">
+            >
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -25,23 +26,22 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <com.quinny898.library.persistentsearch.SearchBox
-                android:layout_width="fill_parent"
                 android:id="@+id/searchbox"
-                android:visibility="gone"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-6dp"
-                android:layout_marginLeft="-6dp"
-                android:layout_marginRight="-6dp"
+                android:visibility="gone"
+                style="@style/SearchBox_margins"
                 />
         </RelativeLayout>
 
 
         <com.dandewine.user.tocleveroad.other.SlidingTabLayout
             android:id="@+id/tabs"
-            app:tabSelectedTextColor="@color/selector"
-            android:elevation="3dp"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:tabSelectedTextColor="@color/selector"
+            android:elevation="@dimen/tabs_elevation"
+            />
 
     </android.support.design.widget.AppBarLayout>
 

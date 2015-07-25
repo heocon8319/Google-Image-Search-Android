@@ -2,7 +2,6 @@ package com.dandewine.user.tocleveroad;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -79,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTabs(){
         CharSequence titles[]={
-                getResources().getText(R.string.search),
-                getResources().getText(R.string.favourite),
+                getResources().getText(R.string.main_activity_search),
+                getResources().getText(R.string.main_activity_favourite),
         };
         pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),titles);
         pager.setAdapter(pagerAdapter);

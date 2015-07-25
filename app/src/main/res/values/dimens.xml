@@ -5,4 +5,35 @@
     <dimen name="image_size">300dp</dimen>
     <dimen name="large_width">400dp</dimen>
     <dimen name="large_height">200dp</dimen>
+
+       <!-- SearchBox layout margins-->
+    <dimen name="searchbox_margin_top">-6dp</dimen>
+    <dimen name="searchbox_margin_left">-6dp</dimen>
+    <dimen name="searchbox_margin_right">-6dp</dimen>
+
+            <!--MainActivity tabs -->
+    <dimen name="tabs_elevation">3dp</dimen>
+
+            <!--GalleryActivity dimensions-->
+    <dimen name="viewpager_margin_bottom">72dp</dimen>
+    <dimen name="thumbnails_heigth">72dp</dimen>
+    <dimen name="thumbnails_padding_top">2dp</dimen>
+
+            <!--CardView item-->
+    <dimen name="cardview_margin">5dp</dimen>
+    <dimen name="cardview.corner_radius">5dp</dimen>
+
+
+            <!--CardView item, textview dimensions-->
+    <dimen name="result_item.textview.width">0dp</dimen>
+    <dimen name="result_item.textview.margin">5dp</dimen>
+
+            <!--CardView item,image heart dimensions-->
+    <dimen name="result_item.image_heart.width">25dp</dimen>
+    <dimen name="result_item.image_heart.height">25dp</dimen>
+    <dimen name="reulst_item.image_heart.margin_left">7dp</dimen>
+
+
+
+
 </resources>

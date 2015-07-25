@@ -23,7 +23,7 @@
 
     <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="@dimen/thumbnails_heigth"
         android:layout_gravity="bottom"
         android:background="@android:color/black">
         <LinearLayout
@@ -32,6 +32,6 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingTop="2dp"/>
+            android:paddingTop="@dimen/thumbnails_padding_top"/>
     </HorizontalScrollView>
 </FrameLayout>

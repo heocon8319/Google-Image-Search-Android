@@ -13,8 +13,23 @@
 
     </style>
 
-    <style name="TextSize" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">17sp</item>
+
+    <style name="SearchBox_margins">
+        <item name="android:layout_marginTop">@dimen/searchbox_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/searchbox_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/searchbox_margin_right</item>
     </style>
+    <!--Textview with image title-->
+    <style name="Result_item_textView">
+        <item name="android:layout_width">@dimen/result_item.textview.width</item>
+        <item name="android:layout_margin">@dimen/result_item.textview.margin</item>
+    </style>
+    <!--Image icon favorite (heart)-->
+    <style name="Result_item_Image_heart">
+        <item name="android:layout_width">@dimen/result_item.image_heart.width</item>
+        <item name="android:layout_height">@dimen/result_item.image_heart.height</item>
+        <item name="android:layout_marginLeft">@dimen/reulst_item.image_heart.margin_left</item>
+    </style>
+
 
 </resources>

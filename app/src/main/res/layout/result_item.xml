@@ -5,9 +5,9 @@
         android:id="@+id/row_my_card"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/cardview_margin"
         card_view:cardPreventCornerOverlap="false"
-        card_view:cardCornerRadius="5dp"
+        card_view:cardCornerRadius="@dimen/cardview.corner_radius"
         >
     <LinearLayout
         android:id="@+id/placeholder"
@@ -22,9 +22,6 @@
         android:adjustViewBounds="true"
         />
 
-
-
-
         <LinearLayout
             android:id="@+id/placeNameHolder"
             android:layout_width="fill_parent"
@@ -34,32 +31,31 @@
             >
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/text_title"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_margin="5dp"
                 android:maxLines="1"
+                android:layout_weight="1"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/text_title" />
+                style="@style/Result_item_textView"
+
+                />
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_gravity="bottom">
                 <ImageView
                     android:id="@+id/heart_uncheck"
-                    android:layout_width="25dp"
                     android:background="@android:color/transparent"
-                    android:layout_marginLeft="7dp"
-                    android:layout_height="25dp"
                     android:visibility="gone"
-                    android:src="@mipmap/heart_grey"/>
+                    android:src="@mipmap/heart_grey"
+                    android:contentDescription="@string/result_item.imageview.uncheck"
+                    style="@style/Result_item_Image_heart"/>
                 <ImageView
                     android:id="@+id/heart_check"
-                    android:layout_width="25dp"
                     android:background="@android:color/transparent"
-                    android:layout_marginLeft="7dp"
-                    android:layout_height="25dp"
-                    android:src="@mipmap/heart_check1"/>
+                    android:src="@mipmap/heart_check1"
+                    android:contentDescription="@string/result_item.imageview.check"
+                    style="@style/Result_item_Image_heart"/>
             </FrameLayout>
 
 

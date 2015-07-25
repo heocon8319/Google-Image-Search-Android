@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dandewine.user.tocleveroad.GalleryActivity;
+import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.adapters.ResultsImageAdapter;
 import com.dandewine.user.tocleveroad.MainActivity;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
@@ -74,7 +75,7 @@ public class ResultOfSearch extends Fragment {
         setRetainInstance(true);
         context = (MainActivity)getActivity();
         setRetainInstance(true);
-        recyclerView = new RecyclerView(getActivity());
+        recyclerView = (RecyclerView)LayoutInflater.from(getActivity()).inflate(R.layout.recyclerview,container,false);
         recyclerView.setHasFixedSize(true);
         mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
         if(imageList==null)
