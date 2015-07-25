@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 
 import com.dandewine.user.tocleveroad.GalleryActivity;
 import com.dandewine.user.tocleveroad.MainActivity;
+import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.adapters.FavouriteImageAdapter;
 import com.dandewine.user.tocleveroad.db.MyContentProvider;
 import com.dandewine.user.tocleveroad.other.Utils;
@@ -45,7 +46,6 @@ public class Favourite extends Fragment {
     private int firstVivisibleItemsGrid[] = new int[2];
     private ArrayList<File> files;
     private File dir;
-    private MainActivity context;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,11 +53,10 @@ public class Favourite extends Fragment {
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setGravity(Gravity.CENTER);
         ButterKnife.inject(this, linearLayout);
-        context = (MainActivity)getActivity();
         setRetainInstance(true);
 
         mLayoutManager = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView = new RecyclerView(getActivity());
+        mRecyclerView = (RecyclerView)LayoutInflater.from(getActivity()).inflate(R.layout.recyclerview,container,false);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(mLayoutManager);
