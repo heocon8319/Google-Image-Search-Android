@@ -140,18 +140,18 @@ public class ResultOfSearch extends Fragment {
         }
 
         request = new SampleRetrofitSpiceRequest(query, nextPage);
-       /* if(TextUtils.equals(query,searchQuery) && nextPage>10)
+        if(TextUtils.equals(query,searchQuery) && nextPage>10)
             spiceManager.execute(request, query+String.format("(%s)",nextPage), DurationInMillis.ONE_WEEK, new RequestImageListener());
         else
             spiceManager.execute(request, query, DurationInMillis.ONE_WEEK, new RequestImageListener());
-        searchQuery = query;*/
+        searchQuery = query;
         nextPage+=10;
         //for debug
-           try {
+       /*    try {
                  spiceManager.getFromCache(GoogleSearchResponse.class, "klitschko",DurationInMillis.ONE_WEEK,new RequestImageListener());
           }catch(Exception e){
                  e.printStackTrace();
-          }
+          }*/
         request=null;
 
     }

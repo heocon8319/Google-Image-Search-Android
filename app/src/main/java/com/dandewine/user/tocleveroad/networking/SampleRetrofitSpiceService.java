@@ -18,7 +18,7 @@ public class SampleRetrofitSpiceService extends RetrofitGsonSpiceService {
                 .setConverter(getConverter())
                 .setEndpoint(getServerUrl());
     }
-
+    //// TODO: 26.07.2015 rewrite this with Jackson
 
     @Override
     protected String getServerUrl() {

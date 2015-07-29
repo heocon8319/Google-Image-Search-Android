@@ -65,12 +65,14 @@ public class Favourite extends Fragment {
 
 
         dir = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache");
-        files = new ArrayList<>();
-        for (int i = 0; i < 10 ; i++) {
+        if(dir.exists()) {
+            files = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
 
-            if(i>=dir.listFiles().length)
-                break;
-           files.add(dir.listFiles()[i]);
+                if (i >= dir.listFiles().length)
+                    break;
+                files.add(dir.listFiles()[i]);
+            }
         }
         if(files!=null)
             initAdapterFromCache(files);

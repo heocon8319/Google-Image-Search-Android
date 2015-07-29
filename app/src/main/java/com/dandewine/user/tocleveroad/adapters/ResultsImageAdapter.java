@@ -148,7 +148,6 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
                     this.notifyItemChanged(i);
                 }
             }
-
         }
     }
     //delete image from DB
