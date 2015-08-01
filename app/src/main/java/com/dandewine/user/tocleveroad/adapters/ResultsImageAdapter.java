@@ -188,7 +188,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     }
 
     private boolean checkSDKVersion(){
-        return (Build.VERSION.SDK_INT==Build.VERSION_CODES.JELLY_BEAN) && (Build.VERSION.SDK_INT<=Build.VERSION_CODES.KITKAT);
+        return (Build.VERSION.SDK_INT<=Build.VERSION_CODES.KITKAT);
     }
     private String getCorrectFileName(String name){
         return name.replace("|","");
@@ -215,7 +215,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
         Log.d("myTag","is delete = "+isDelete);
         return isDelete;
     }
-        //// TODO: 30.07.2015 check the database work, delete/insert, filenofoundexeptiion on api 16
+
     @Override
     public int getItemCount() {
         return imageList.size();
