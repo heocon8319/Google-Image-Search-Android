@@ -62,8 +62,7 @@ public class GalleryActivity extends AppCompatActivity {
         else {
             if(files==null)
                 files = new ArrayList<>();
-            String root = Environment.getExternalStorageDirectory().toString();
-            File dir = new File(Utils.concat(root,"/ImageSearcherCache/"));
+            File dir = new File(Utils.concat(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)));
             if(dir.exists())
                 Collections.addAll(files, dir.listFiles());
         }

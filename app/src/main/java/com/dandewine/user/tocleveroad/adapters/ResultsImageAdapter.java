@@ -1,9 +1,11 @@
 package com.dandewine.user.tocleveroad.adapters;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.support.annotation.RequiresPermission;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,6 +22,7 @@ import com.dandewine.user.tocleveroad.R;
 import com.dandewine.user.tocleveroad.db.FavouriteService;
 import com.dandewine.user.tocleveroad.fragments.Favourite;
 import com.dandewine.user.tocleveroad.model.GoogleImage;
+import com.dandewine.user.tocleveroad.other.Utils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -32,6 +35,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -158,20 +162,18 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
         context.startService(intent);
     }
     //save image to SD
+   @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private void saveToExternal(Bitmap bitmap,String fileName){
-        String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root+"/ImageSearcherCache");
-        myDir.mkdir();
+        File myDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File checkFile = new File(myDir,fileName+".png");
         if(checkFile.exists()){
-            checkFile = null;
             checkFile = new File(myDir,fileName+"(1).png");
         }
-        if (myDir.isDirectory() && myDir.exists()) {
+        if (myDir!=null && myDir.isDirectory() && myDir.exists()) {
             try {
                 FileOutputStream out = new FileOutputStream(checkFile);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
+                updateFavouriteAdapter(fileName, checkFile.getAbsolutePath(), true);
                 Log.d("myTag","write file to external");
                 out.flush();
                 out.close();
@@ -179,7 +181,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
                 e.printStackTrace();
             }
         }
-        updateFavouriteAdapter(fileName, checkFile.getAbsolutePath(), true);
+
 
     }
     //memory log for testing memory usage
@@ -197,14 +199,14 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     private boolean removeImageFromExternal(String name) {
         File file;
         if(!name.contains(".png"))
-            file = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache/",name+".png");
+            file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), Utils.concat(name,".png"));
         else
-            file = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache/",name);
+            file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),name);
         boolean isDelete = file.delete();
         Log.d("myTag","is delete = "+isDelete);
         return isDelete;
     }
-
+        //// TODO: 30.07.2015 check the database work, delete/insert, filenofoundexeptiion on api 16
     @Override
     public int getItemCount() {
         return imageList.size();
@@ -216,7 +218,7 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
     }
 
 
-    public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @InjectView(R.id.imageView)ImageView image;
         @InjectView(R.id.heart_uncheck) ImageView favouriteUncheck;
         @InjectView(R.id.heart_check)ImageView favouriteCheck;

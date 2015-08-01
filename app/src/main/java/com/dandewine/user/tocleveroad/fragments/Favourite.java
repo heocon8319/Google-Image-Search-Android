@@ -62,10 +62,8 @@ public class Favourite extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addOnScrollListener(new OnFavouriteScrollListener());
 
-
-
-        dir = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache");
-        if(dir.exists()) {
+        dir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if(dir!=null && dir.exists()) {
             files = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
 

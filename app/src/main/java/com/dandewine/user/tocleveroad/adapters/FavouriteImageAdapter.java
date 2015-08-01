@@ -123,14 +123,14 @@ public class FavouriteImageAdapter extends RecyclerView.Adapter<FavouriteImageAd
     private boolean removeImageFromExternal(String name) {
         File file;
         if(!name.contains(".png"))
-             file = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache/",name+".png");
+             file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)+name+".png");
         else
-             file = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache/",name);
+             file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+name);
         return file.delete();
     }
     public void addItem(String title,String url,int index){
         if(fromCache && !url.contains("file:")){
-            File file = new File(Environment.getExternalStorageDirectory()+"/ImageSearcherCache",title+".png");
+            File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),Utils.concat(title,".png"));
             if(file.exists())
                 pathList.add("file:"+file.getAbsolutePath());
         }else
