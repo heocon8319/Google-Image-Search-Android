@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.RequiresPermission;
 import android.support.v7.widget.RecyclerView;
@@ -165,10 +166,13 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private void saveToExternal(Bitmap bitmap,String fileName){
         File myDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+       if(fileName.contains("|") && checkSDKVersion())
+           fileName=getCorrectFileName(fileName);
         File checkFile = new File(myDir,fileName+".png");
         if(checkFile.exists()){
             checkFile = new File(myDir,fileName+"(1).png");
         }
+
         if (myDir!=null && myDir.isDirectory() && myDir.exists()) {
             try {
                 FileOutputStream out = new FileOutputStream(checkFile);
@@ -181,8 +185,13 @@ public class ResultsImageAdapter extends RecyclerView.Adapter<ResultsImageAdapte
                 e.printStackTrace();
             }
         }
+    }
 
-
+    private boolean checkSDKVersion(){
+        return (Build.VERSION.SDK_INT==Build.VERSION_CODES.JELLY_BEAN) && (Build.VERSION.SDK_INT<=Build.VERSION_CODES.KITKAT);
+    }
+    private String getCorrectFileName(String name){
+        return name.replace("|","");
     }
     //memory log for testing memory usage
     private void logMem(){
