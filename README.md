@@ -1,4 +1,4 @@
 # GoogleImageSearcher
-Simple google image search app</br>
+Simple google image search app<br><br>
 ![search](http://i.imgur.com/TL5Mgdb.gif) ![favorites](http://i.imgur.com/aOox3vr.gif)
 
